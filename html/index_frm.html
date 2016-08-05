@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <style type="text/css">
+        table
+        {
+            border-collapse:collapse;
+        }
+
+        table, td, th
+        {
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-title">主页</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <section class="aui-content aui-refresh-content">
+    <div class="aui-card-list">
+        <div class="aui-card-list-header aui-bg-info" style="margin-top:0px;">
+            <div style="color:#fff;">
+                <span class="aui-font-size-20" id="id-month">7</span>
+                <span class="aui-font-size-20">月份</span>
+                <span class="aui-font-size-16"> / </span>
+                <span class="aui-font-size-12" id="id-year">2016</span>
+            </div>
+        </div>
+        <div class="aui-card-list-content">
+            <div class="aui-content">
+                <ul class="aui-list aui-list-in">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-label-icon">
+                            <i class="aui-iconfont aui-icon-forward"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-title">本月收入</div>
+                            <div class="aui-list-item-right">
+                                <p>￥<span id="id-month-in-money">0.00</span></p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-label-icon">
+                            <i class="aui-iconfont aui-icon-back"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-title">本月支出</div>
+                            <div class="aui-list-item-right">
+                                <p>￥<span id="id-month-out-money">0.00</span></p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-label-icon">
+                            <i class="aui-iconfont aui-icon-info"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-title">本月余额</div>
+                            <div class="aui-list-item-right">
+                                <p>￥<span id="id-month-over-money">0.00</span></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="aui-card-list-content-padded">
+            <div class="aui-btn aui-btn-warning aui-btn-block" onclick="goAddFrame();">
+                <span class="aui-iconfont aui-icon-pencil"></span>记一笔
+            </div>
+        </div>
+        <div class="aui-card-list-content">
+            <div class="aui-content">
+                <ul class="aui-list aui-media-list">
+                    <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-media" style="width: 2rem;">
+                            <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title">今日</div>
+                                <p class="aui-font-size-12">￥<span id="id-day-in-money">0.00</span></p>
+                            </div>
+                            <div class="aui-list-item-text">
+                                <p class="aui-font-size-12" id="id-date">-</p>
+                                <p class="aui-font-size-12">￥<span id="id-day-out-money">0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-media" style="width: 2rem;">
+                            <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title">本月</div>
+                                <p class="aui-font-size-12">￥<span id="id-month-in-money-1">0.00</span></p>
+                            </div>
+                            <div class="aui-list-item-text">
+                                <p class="aui-font-size-12"><span id="id-month-1">7</span>月份</p>
+                                <p class="aui-font-size-12">￥<span id="id-month-out-money-1">0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-media" style="width: 2rem;">
+                            <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title">今年</div>
+                                <p class="aui-font-size-12">￥<span id="id-year-in-money">0.00</span></p>
+                            </div>
+                            <div class="aui-list-item-text">
+                                <p class="aui-font-size-12"><span id="id-year-1">2016</span>年</p>
+                                <p class="aui-font-size-12">￥<span id="id-year-out-money">0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-media" style="width: 2rem;">
+                            <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title">历年</div>
+                                <p class="aui-font-size-12">￥<span id="id-all-in-money">0.00</span></p>
+                            </div>
+                            <div class="aui-list-item-text">
+                                <p class="aui-font-size-12">所有年份</p>
+                                <p class="aui-font-size-12">￥<span id="id-all-out-money">0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <p>主页</p>
+    <p><a onclick="goLogout();">退出</a></p>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript">
+    var uid = 0;
+    var toast = new auiToast();
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = '1px';
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        toast.loading({
+            title:"加载中",
+            duration:2000
+        },function(ret){
+            initData(function(){
+                toast.hide();
+            });
+        })
+
+        api.addEventListener({
+            name: 'indexInitData'
+        }, function(ret, err){
+            if( ret ){
+                //alert( JSON.stringify( ret ) );
+                initData(function(){});
+            }else{
+                alert( JSON.stringify( err ) );
+            }
+        });
+
+    };
+
+    /** 下拉刷新 */
+    var pullRefresh = new auiPullToRefresh({
+        container: document.querySelector('.aui-refresh-content'),
+        triggerDistance: 100
+    },function(ret){
+        if(ret.status=="success"){
+            initData(function(){
+                pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+            });
+        }
+    });
+
+    /** 初始化页面数据 */
+    function initData(callback) {
+        api.getPrefs({
+            key: 'user'
+        }, function(ret, err){
+            if( ret ){
+                uid = JSON.parse(ret.value).uid;
+                getData(function(data){
+                    var MonthOverMoney = data['MonthInMoney'] - data['MonthOutMoney'];
+                    $api.byId('id-month-in-money').innerHTML = data['MonthInMoney'];
+                    $api.byId('id-month-out-money').innerHTML = data['MonthOutMoney'];
+                    $api.byId('id-month-over-money').innerHTML = MonthOverMoney.toFixed(2);
+                    $api.byId('id-month-in-money-1').innerHTML = data['MonthInMoney'];
+                    $api.byId('id-month-out-money-1').innerHTML = data['MonthOutMoney'];
+                    $api.byId('id-day-in-money').innerHTML = data['TodayInMoney'];
+                    $api.byId('id-day-out-money').innerHTML = data['TodayOutMoney'];
+                    $api.byId('id-year-in-money').innerHTML = data['YearInMoney'];
+                    $api.byId('id-year-out-money').innerHTML = data['YearOutMoney'];
+                    $api.byId('id-all-in-money').innerHTML = data['SumInMoney'];
+                    $api.byId('id-all-out-money').innerHTML = data['SumOutMoney'];
+                    callback();
+                });
+            }else{
+                 alert( JSON.stringify( err ) );
+            }
+        });
+        var now = new Date();
+        var varYear = now.getFullYear();
+        var varMonth = now.getMonth() + 1;
+        var varDay = now.getDate();
+        var strNow = varYear + '年' + varMonth + '月' + varDay + '日';
+        $api.byId('id-year').innerHTML = varYear;
+        $api.byId('id-year-1').innerHTML = varYear;
+        $api.byId('id-month').innerHTML = varMonth;
+        $api.byId('id-month-1').innerHTML = varMonth;
+        $api.byId('id-date').innerHTML = strNow;
+    }
+
+
+    /** 获取主页数据 */
+    function getData(callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/statistic',
+            method: 'get',
+            data: {
+                values: { 
+                    type: 'all'
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                // alert( JSON.stringify( ret ) );
+                if (ret['uid'] == uid) {
+                    callback(ret['data']);
+                } else {
+                    api.alert({
+                        title: '重新登录',
+                        msg: '登录验证已过期，请重新登录。',
+                    }, function(ret, err){
+                        goLogout();
+                    });
+                }
+            } else {
+                alert( JSON.stringify( err ) );
+            }
+        });
+    }
+
+    /** 跳转到记账页面 */
+    function goAddFrame() {
+        api.sendEvent({
+            name: 'indexFrame',
+            extra: {
+                name: 'add_frm',
+                index: '2'
+            }
+        });
+    }
+
+    /** 退出登录 */
+    function getData(callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/statistic',
+            method: 'get',
+            data: {
+                values: { 
+                    type: 'all'
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                // alert( JSON.stringify( ret ) );
+                if (ret['uid'] == uid) {
+                    callback(ret['data']);
+                } else {
+                    api.alert({
+                        title: '重新登录',
+                        msg: '登录验证已过期，请重新登录。',
+                    }, function(ret, err){
+                        goLogout();
+                    });
+                }
+            } else {
+                alert( JSON.stringify( err ) );
+            }
+        });
+    }
+
+    function goAddFrame() {
+        api.sendEvent({
+            name: 'indexFrame',
+            extra: {
+                name: 'add_frm',
+                index: '2'
+            }
+        });
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+        
+</script>
+</html>
+</html>

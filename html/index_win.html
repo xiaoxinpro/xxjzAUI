@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px;">
+<!--         <a class="aui-pull-left aui-btn">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a> -->
+        <div class="aui-title">小歆记账AUI</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="main">
+        
+    </div>
+    <footer class="aui-bar aui-bar-tab" id="footer">
+        <div class="aui-bar-tab-item aui-active" tapmode>
+            <i class="aui-iconfont aui-icon-home"></i>
+            <div class="aui-bar-tab-label">首页</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <i class="aui-iconfont aui-icon-plus"></i>
+            <div class="aui-bar-tab-label">记账</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <i class="aui-iconfont aui-icon-search"></i>
+            <div class="aui-bar-tab-label">查询</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <i class="aui-iconfont aui-icon-my"></i>
+            <div class="aui-bar-tab-label">我的</div>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-tab.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var toast = new auiToast();
+    apiready = function(){
+        api.parseTapmode();
+        openFrame('index_frm');
+        //api.closeFrame({name: 'login_frm'});
+
+        //主窗体页面跳转监听
+        api.addEventListener({
+            name: 'indexFrame'
+        }, function(ret, err){
+            if( ret ){
+                //alert( JSON.stringify( ret ) );
+                openFrame(ret.value.name,ret.value.reload);
+                if (ret.value.index) {
+                    tab.setActive(ret.value.index);
+                }
+            }else{
+                 alert( JSON.stringify( err ) );
+            }
+        });
+
+        getUsualData(function(){});
+    };
+
+    var tab = new auiTab({
+        element:document.getElementById("footer")
+    },function(ret){
+        if(ret){
+            if (ret.index == 4) {
+                openFrame('user_frm');
+            } else if (ret.index == 3) {
+                openFrame('find_frm');
+            } else if (ret.index == 2) {
+                openFrame('add_frm');
+            } else {
+                openFrame('index_frm');
+            }
+        }
+    });
+
+
+    /** 获取常用数据保存到本地 */
+    function getUsualData(callback) {
+        //获取分类列表
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/aclass',
+            method: 'get',
+            data: {
+                values: { 
+                    type: 'get'
+                }
+            }
+        },function(ret, err){
+            if (ret.uid) {
+                // alert( JSON.stringify( ret.data.in ) );
+                $api.setStorage('inClass', ret.data.in);
+                $api.setStorage('outClass', ret.data.out);
+                callback();
+            } else {
+                alert( JSON.stringify( err ) );
+                callback();
+            }
+        });
+
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    function openFrame(name,reload) {
+        var header_h = 0;//$api.offset($api.byId('header')).h;
+        var footer_h = $api.offset($api.byId('footer')).h;
+        var frame_h = api.winHeight - header_h - footer_h;
+        if (!reload) {
+            reload = false;
+        }
+        api.openFrame({
+            name: ''+name+'',
+            url: ''+name+'.html',
+            bounces: false,
+            reload: reload,
+            rect: {
+                x: 0,
+                y: header_h,
+                w: 'auto',
+                h: frame_h
+            }
+        })
+    }
+
+    function openWin(name){
+        var delay = 0;
+        if(api.systemType != 'ios'){
+            delay = 300;
+        }
+        api.openWin({
+            name: ''+name+'',
+            url: ''+name+'.html',
+            bounces:false,
+            reload: true,
+            delay: delay,
+            slidBackEnabled:true,
+            vScrollBarEnabled:false
+        });
+    }
+
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+</script>
+</html>

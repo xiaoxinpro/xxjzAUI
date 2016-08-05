@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="./css/aui.2.0.css" />
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+<!--     <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px;">
+        <a class="aui-pull-left aui-btn">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">小歆记账AUI</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header> -->
+<!--     <div id="main">
+        <a onclick="LoginFrame();">登录</a>
+    </div> -->
+
+</body>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+        api.setStatusBarStyle({
+            style: 'light'
+        });
+        api.parseTapmode();
+
+        //登录成功监听
+        api.addEventListener({
+            name: 'xxjzLogin'
+        }, function(ret, err){
+            if( ret ){
+                //alert( JSON.stringify( ret ) );
+                openWin('index_win');
+            }else{
+                //alert( JSON.stringify( err ) );
+                LoginFrame();
+            }
+        });
+
+        //退出登录监听
+        api.addEventListener({
+            name: 'xxjzLogout'
+        }, function(ret, err){
+            LoginFrame();
+            //api.closeWin({name: 'index_win'});
+        });
+
+        //主流程
+        api.getPrefs({
+            key: 'user'
+        }, function(ret, err){
+            if( ret.value ){
+                var user = JSON.parse(ret['value']);
+                if (user.uid > 0) {
+                    //openWin('index_win');
+                    AutoLogin(user);
+                } else {
+                    LoginFrame();
+                }
+            } else {
+                LoginFrame();
+            }
+        });
+
+        // var body_h = $api.offset($api.dom('body')).h;
+        // var header_h = $api.offset($api.byId('header')).h;
+        // var footer_h = $api.offset($api.byId('footer')).h;
+        // var frame_h = api.winHeight - header_h - footer_h;
+        // api.openFrame({
+        //     name: 'index',
+        //     url: './html/main.html',
+        //     bounces: true,
+        //     rect: {
+        //         x: 0,
+        //         y: header_h,
+        //         w: 'auto',
+        //         h: frame_h
+        //     }
+        // })
+        
+    };
+
+    /** 自动登录 */
+    function AutoLogin(user) {
+        var uid = user.uid;
+        var username = user.username;
+        var password = user.password;
+        if (uid && username && password) {
+            sendPostLogin(username, password, function(ret){
+                if (ret['uid'] > 0) {
+                    //发送登录成功事件
+                    api.sendEvent({
+                        name: 'xxjzLogin',
+                        extra: {
+                            uid: ret['uid'], 
+                            username: username,
+                            password: password
+                        }
+                    });
+                } else {
+                    api.alert({
+                        title: '登录失败',
+                        msg: ret['uname']
+                    },function(){
+                        LoginFrame();
+                    });
+                }
+            });
+        }
+    }
+
+    /** 发送登录Post请求 */
+    function sendPostLogin(username, password, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Login/login_api',
+            method: 'post',
+            data: {
+                values: { 
+                    username: username,
+                    password: password,
+                    submit: 'xxjzAUI'
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                callback(ret);
+            } else {
+                callback({
+                    uid: 0,
+                    uname: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
+    }
+
+    /** 打开登录页面 */
+    function LoginFrame() {
+        api.openFrame({
+            name: 'login_frm',
+            url: './html/login_frm.html',
+            bounces: false,
+            reload: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            animation: {
+                type: "movein",                //动画类型（详见动画类型常量）
+                curve: "ease_out",              //动画曲线类型，开始时慢
+                subType: "from_bottom",        //动画子类型（详见动画子类型常量）
+                duration: 300                  //动画过渡时间，默认300毫秒
+            }
+        })
+        api.closeWin({
+            name: 'index_win',
+            animation: {
+                type: 'fade'
+            }
+        });
+    }
+
+    /** 打开指定窗体 */
+    function openWin(name){
+        api.openWin({
+            name: ''+name+'',
+            url: './html/'+name+'.html',
+            bounces:false,
+            delay: 250,
+            slidBackEnabled:false,
+            vScrollBarEnabled:false,
+            animation: {
+                type: 'fade'
+            }
+        });
+    }
+
+    /** 关闭正在活动的窗体 */
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+
+    // /** 3DTouch配置 */
+    // var 3DTouch = api.require('3DTouch');
+    // 3DTouch.setShortcutItems({
+    //     items:[{
+    //         type:'xxjz.add',
+    //         title:'记账',
+    //         icon:{
+    //             type:0
+    //         }
+    //     },
+    //     {
+    //         type:'xxjz.find',
+    //         title:'查询',
+    //         icon:{
+    //             type:0
+    //         }
+    //     },
+    //     {
+    //         type:'xxjz.chart',
+    //         title:'统计',
+    //         icon:{
+    //             type:0
+    //         }
+    //     },
+    //     {
+    //         type:'xxjz.site',
+    //         title:'设置',
+    //         icon:{
+    //             type:0
+    //         }
+    //     }]
+    // });
+
+    // /** 3DTouch监听 */
+    // 3DTouch.setListener(
+    //     function(ret,err){
+    //         var type = ret.type;
+    //         if (type == 'xxjz.add') {
+
+    //         } else if (type == 'xxjz.find') {
+
+    //         } else if (type == 'xxjz.chart') {
+                
+    //         } else if (type == 'xxjz.site') {
+                
+    //         } else {
+                
+    //         }
+    //     }
+    // );
+</script>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+        
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-title">
+            <div class="aui-bar aui-bar-btn aui-bar-btn-round">
+                <div class="aui-bar-btn-item aui-active">支出</div>
+                <div class="aui-bar-btn-item">收入</div>
+            </div>
+        </div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+            <!-- 类别 -->
+            <input type="hidden" id="add-type" value="2">
+
+            <!-- 金额 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        金额
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="number" id="add-money" step=0.01 placeholder="输入支出金额" />
+                    </div>
+                </div>
+            </li>
+            <!-- 分类 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        分类
+                    </div>
+                    <div class="aui-list-item-input">
+                        <select id="add-class" >
+                            <option value="1">分类名称</option>
+                        </select>
+                    </div>
+                </div>
+            </li>
+            <!-- 备注 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        备注
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="add-mark" placeholder="输入备注信息" />
+                    </div>
+                </div>
+            </li>
+            <!-- 时间 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        时间
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="date" id="add-time" value="2016-08-01" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdAdd();">添加</div>
+        </p>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-block aui-btn-sm" onclick="cmdReturn();">返回</div>
+        </p>
+
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/base64.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var toast = new auiToast();
+    var now = new Date();
+    var strNow = '';
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //页面显示初始化
+        var varYear = now.getFullYear();
+        var varMonth= now.getMonth() + 1;
+        var varDay  = now.getDate();
+        strNow = now.getFullYear() + '-';
+        if (varMonth < 10) {
+            strNow += '0';
+        }
+        strNow += varMonth + '-';
+        if (varDay < 10) {
+            strNow += '0';
+        }
+        strNow += varDay;
+        $api.byId('add-time').value = strNow;
+        initList();
+    }
+
+    var bar = document.querySelectorAll(".aui-bar-btn");
+    if(bar){
+        for(var i=0; i<bar.length;i++){
+            var d = bar[i];
+            var tab = new auiTab({
+                element:bar[i],
+                repeatClick:false
+            },function(ret){
+                initList();
+                if (ret.index == 1) {
+                    // alert('添加支出');
+                    $api.byId('add-money').placeholder = '输入支出金额';
+                    $api.byId('add-type').value = '2';
+                    showClass('out');
+                    // alert('添加支出');
+                }
+                if (ret.index == 2) {
+                    // alert('添加收入');
+                    $api.byId('add-money').placeholder = '输入收入金额';
+                    $api.byId('add-type').value = '1';
+                    showClass('in');
+                    // alert('添加收入');
+                }
+                $api.byId('add-money').focus();
+            });
+
+        }
+    }
+
+    /** 初始化表单 */
+    function initList() {
+        $api.byId('add-money').value = '';
+        $api.byId('add-mark').value = '';
+        $api.byId('add-time').value = strNow;
+        if ($api.byId('add-type').value == 1) {
+            showClass('in');
+        } else {
+            showClass('out');
+        }
+    }
+
+    /** 初始化显示分类(收支类别) */
+    function showClass(type) {
+        if (type == 'in') {
+            var ClassList = $api.getStorage('inClass');
+        } else {
+            var ClassList = $api.getStorage('outClass');
+        }
+
+        $api.byId('add-class').options.length=0;
+        for (var key in ClassList) {
+            $api.byId('add-class').options.add(new Option(ClassList[key]),key);
+        }
+    }
+
+    /** 校验记账数据 */
+    function cheakAddData(data, callback) {
+        if (!parseFloat(data.acmoney)) {
+            api.alert({
+                title: '金额错误',
+                msg: '请输入一个有效的金额!',
+            }, function(ret, err){
+                $api.byId('add-money').value = '';
+                $api.byId('add-money').focus;
+            });
+            return false;
+        }
+
+        if (data.acclassid.length == 0) {
+            api.alert({
+                title: '分类出错',
+                msg: '请务必选择一个有效分类，若没有分类请先新建分类！',
+            });
+            return false;
+        }
+
+        if (data.acremark.length == 0) {
+            api.alert({
+                title: '备注错误',
+                msg: '备注信息不能为空!',
+            }, function(ret, err){
+                $api.byId('add-mark').focus;
+            });
+            return false;
+        }
+        
+        return true;
+    }
+
+    /** 发送记账数据(data数组, 回调函数) */
+    function sendAddData(data, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
+            method: 'post',
+            data: {
+                values: { 
+                    type: 'add',
+                    data: data
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                //alert( JSON.stringify( ret ) );
+                callback(ret);
+            } else {
+                //alert( JSON.stringify( err ) );
+                callback({
+                    uid: 0,
+                    data: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
+    }
+
+    function cmdReturn() {
+        goIndex();
+    }
+
+    function cmdAdd() {
+        var addData = {};
+        addData.acmoney   = $api.byId('add-money').value;
+        addData.acclassid = $api.byId('add-class').value;
+        addData.actime    = $api.byId('add-time').value;
+        addData.acremark  = $api.byId('add-mark').value;
+        addData.zhifu     = $api.byId('add-type').value;
+        //alert(JSON.stringify(addData));
+        if (!cheakAddData(addData)) {
+            return;
+        }
+        var strData = BASE64.encoder(JSON.stringify(addData));
+        toast.loading({
+            title:"记账中",
+            duration:2000
+        },function(ret){
+            sendAddData(strData,function(ret){
+                toast.hide();
+                if (ret) {
+                    //alert(JSON.stringify(ret));
+                    if (ret.uid) {
+                        if (ret.data.ret) {
+                            //显示记账完成提示框
+                            toast.success({
+                                title: '记账完成',
+                                duration:600
+                            });
+
+                            //发送主页数据刷新事件
+                            api.sendEvent({
+                                name: 'indexInitData',
+                                extra: {
+                                    send: 'add_frm', 
+                                    receive: 'index_frm'
+                                }
+                            });
+
+                            //延时页面跳转
+                            setTimeout(function(){
+                                goIndex(false);
+                                initList();
+                            }, 500);
+                        } else {
+                            //记账失败
+                            api.alert({
+                                title: '记账失败',
+                                msg: ret.data.msg
+                            },function(){
+                                initList();
+                            });
+                        }
+                    } else {
+                        //未登录
+                        toast.fail({
+                            title: '未登录',
+                            duration:1000
+                        },function(){});
+
+                        //延时页面跳转
+                        setTimeout(function(){
+                            goLogout();
+                        }, 900);
+                    }
+                } else {
+                    api.alert({
+                        title: '记账失败',
+                        msg: '连接服务器失败，请稍后再试！'
+                    },function(){});
+                }
+            });  
+            // setTimeout(function(){
+            //     toast.hide();
+            // }, 3000)
+        });
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    function goIndex(isReload) {
+        if(!isReload) {
+            isReload = false;
+        }
+        api.sendEvent({
+            name: 'indexFrame',
+            extra: {
+                name: 'index_frm',
+                index: '1',
+                reload: isReload
+            }
+        });
+    }
+
+</script>
+</html>

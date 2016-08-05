@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+		
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-title">用户中心</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" onclick="api.rebootApp();"></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+	<p>用户</p>
+    <p><a onclick="clearCache();">清除缓存</a></p>
+    <p><a onclick="getUserInfo();">获取用户信息</a></p>
+    <div>
+        <p id="id-username"></p>
+    </div>
+    <div>
+        <p id="id-email"></p>
+    </div>
+    <p><a onclick="goLogout();">退出登录</a></p>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var user;
+    var uid = 0;
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+        api.getPrefs({
+            key: 'user'
+        }, function(ret, err){
+            if( ret ){
+                user = JSON.parse(ret['value']);
+                uid = user.uid;
+                getUserInfo();
+            }else{
+                 alert( JSON.stringify( err ) );
+            }
+        });
+    }
+
+    function getUserInfo() {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/user',
+            method: 'post',
+            data: {
+                values: { 
+                    uid: uid
+                },
+            }
+        },function(ret, err){
+            $api.byId('id-username').innerHTML = '';
+            $api.byId('id-email').innerHTML = '';
+            if (ret) {
+                // alert( JSON.stringify( ret ) );
+                if (ret['uid'] == uid) {
+                    $api.byId('id-username').innerHTML = ret.username;
+                    $api.byId('id-email').innerHTML = ret.email;
+                } else {
+                    api.alert({
+                        title: '重新登录',
+                        msg: '登录验证已过期，请重新登录。',
+                    }, function(ret, err){
+                        goLogout();
+                    });
+                }
+            } else {
+                alert( JSON.stringify( err ) );
+            }
+        });
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    function clearCache() {
+        api.clearCache(function(){
+            api.toast({
+                msg:'清除完成'
+            });
+        });
+    }
+
+</script>
+</html>
