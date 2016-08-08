@@ -161,8 +161,8 @@
                 duration: 300                  //动画过渡时间，默认300毫秒
             }
         })
-        api.closeWin({
-            name: 'index_win',
+        api.closeToWin({
+            name: 'root',
             animation: {
                 type: 'fade'
             }
@@ -175,7 +175,7 @@
             name: ''+name+'',
             url: './html/'+name+'.html',
             bounces:false,
-            delay: 250,
+            delay: 400,
             slidBackEnabled:false,
             vScrollBarEnabled:false,
             animation: {

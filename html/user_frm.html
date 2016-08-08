@@ -64,8 +64,6 @@
                 },
             }
         },function(ret, err){
-            $api.byId('id-username').innerHTML = '';
-            $api.byId('id-email').innerHTML = '';
             if (ret) {
                 // alert( JSON.stringify( ret ) );
                 if (ret['uid'] == uid) {
@@ -95,6 +93,8 @@
     }
 
     function clearCache() {
+        $api.byId('id-username').innerHTML = '';
+        $api.byId('id-email').innerHTML = '';
         api.clearCache(function(){
             api.toast({
                 msg:'清除完成'
