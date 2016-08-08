@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-pull-left">
+            <a class=" aui-btn aui-iconfont aui-icon-left" tapmode onclick="closeWin();"></a>
+        </div>
+        <div class="aui-title">流水</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <section class="aui-content aui-refresh-content">
+    <div class="aui-card-list">
+        <div class="aui-card-list-header aui-bg-info" style="margin-top:0px;">
+            <div style="color:#fff;">
+                <span class="aui-font-size-20" id="id-month">7</span>
+                <span class="aui-font-size-20">月份</span>
+                <span class="aui-font-size-16"> / </span>
+                <span class="aui-font-size-12" id="id-year">2016</span>
+            </div>
+        </div>
+
+        <div class="aui-card-list-content">
+            <div class="aui-content" id="id-list-ul">
+                <ul class="aui-list aui-media-list">
+                    <li class="aui-list-header">
+                        2016年8月8日
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                        <div class="aui-media-list-item-inner" onclick="">
+                            <div class="aui-list-item-media" style="width: 3rem;">
+                                <img src="../image/icon_out.png" class="aui-img-round aui-list-img-sm">
+                            </div>
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-text">
+                                    <div class="aui-list-item-title">
+                                        <p class="aui-font-size-18">吃饭</p>
+                                        <p class="aui-font-size-12">备注：晚餐</p>
+                                    </div>
+                                    <div class="aui-list-item-right aui-font-size-16">￥2.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                        <div class="aui-media-list-item-inner" onclick="">
+                            <div class="aui-list-item-media" style="width: 3rem;">
+                                <img src="../image/icon_in.png" class="aui-img-round aui-list-img-sm">
+                            </div>
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-text">
+                                    <div class="aui-list-item-title">
+                                        <p class="aui-font-size-18">工资</p>
+                                        <p class="aui-font-size-12">备注：7月份</p>
+                                    </div>
+                                    <div class="aui-list-item-right aui-font-size-16">￥100.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="aui-list aui-media-list">
+                    <li class="aui-list-header">
+                        2016年8月7日
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                        <div class="aui-media-list-item-inner" onclick="">
+                            <div class="aui-list-item-media" style="width: 3rem;">
+                                <img src="../image/icon_out.png" class="aui-img-round aui-list-img-sm">
+                            </div>
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-text">
+                                    <div class="aui-list-item-title">
+                                        <p class="aui-font-size-18">吃饭</p>
+                                        <p class="aui-font-size-12">备注：晚餐</p>
+                                    </div>
+                                    <div class="aui-list-item-right aui-font-size-16">￥12.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item aui-list-item-middle">
+                        <div class="aui-media-list-item-inner" onclick="">
+                            <div class="aui-list-item-media" style="width: 3rem;">
+                                <img src="../image/icon_in.png" class="aui-img-round aui-list-img-sm">
+                            </div>
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-text">
+                                    <div class="aui-list-item-title">
+                                        <p class="aui-font-size-18">工资</p>
+                                        <p class="aui-font-size-12">备注：7月份</p>
+                                    </div>
+                                    <div class="aui-list-item-right aui-font-size-16">￥5.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <p>主页</p>
+    <p><a onclick="goLogout();">退出</a></p>
+</body>
+<script type="text/javascript" src="../script/base64.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript">
+    var uid = 0;
+    var valPage = 1;
+    var toast = new auiToast();
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = '1px';
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        // toast.loading({
+        //     title:"加载中",
+        //     duration:2000
+        // },function(ret){
+            initData(function(){
+                toast.hide();
+            });
+        // });
+
+        api.addEventListener({
+            name: 'indexInitData'
+        }, function(ret, err){
+            if( ret ){
+                //alert( JSON.stringify( ret ) );
+                initData(function(){});
+            }else{
+                alert( JSON.stringify( err ) );
+            }
+        });
+
+    };
+
+    /** 下拉刷新 */
+    var pullRefresh = new auiPullToRefresh({
+        container: document.querySelector('.aui-refresh-content'),
+        triggerDistance: 100
+    },function(ret){
+        if(ret.status=="success"){
+            initData(function(){
+                pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+            });
+        }
+    });
+
+    /** 初始化页面数据 */
+    function initData(callback) {
+        var jsonData = {};
+        jsonData.type = 'get';
+        jsonData.data = BASE64.encoder(JSON.stringify({
+            gettype: api.pageParam.type,
+            year: api.pageParam.year,
+            month: api.pageParam.month,
+            day: api.pageParam.day,
+            page: 1
+        }));
+
+        getData(jsonData, function(ret){
+            //alert( JSON.stringify( ret ) );
+            var ListUl = $api.byId('id-list-ul');
+            ListUl.innerHTML = ''; //清空List列表
+            var ListData = ret.data;
+            var ListDay = ListData[0].actime;
+            var ul_html = '<ul class="aui-list aui-media-list">'+
+                    '<li class="aui-list-header">'+ ListData[0].actime +'</li>';
+            ListUl.insertAdjacentHTML('beforeEnd', ul_html);
+            for (var i = 0; i < ListData.length; i++) {
+                if (ListDay != ListData[i].actime) {
+                    ul_html = '</ul><ul class="aui-list aui-media-list">'+
+                    '<li class="aui-list-header">'+ ListData[i].actime +'</li>';
+                    ListUl.insertAdjacentHTML('beforeEnd', ul_html);
+                    ListDay = ListData[i].actime;
+                } 
+
+                var ListImage = 'out';
+                if (ListData[i].zhifu == 1) {
+                    var ListImage = 'in';
+                }
+                var html = '<li class="aui-list-item aui-list-item-middle">'+
+                        '<div class="aui-media-list-item-inner" onclick="">'+
+                            '<div class="aui-list-item-media" style="width: 3rem;">'+
+                                '<img src="../image/icon_'+ListImage+'.png" class="aui-img-round aui-list-img-sm">'+
+                            '</div>'+
+                            '<div class="aui-list-item-inner aui-list-item-arrow">'+
+                                '<div class="aui-list-item-text">'+
+                                    '<div class="aui-list-item-title">'+
+                                        '<p class="aui-font-size-18">'+ListData[i].acclassid+'</p>'+
+                                        '<p class="aui-font-size-12">备注：'+ListData[i].acremark+'</p>'+
+                                    '</div>'+
+                                    '<div class="aui-list-item-right aui-font-size-16">￥'+ListData[i].acmoney+'</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</li>';
+                ListUl.insertAdjacentHTML('beforeEnd', html);
+            }
+            ListUl.insertAdjacentHTML('beforeEnd', '</ul>');
+
+            // var lis = ListUl.querySelectorAll('.aui-list-item');
+            // for (var i = lis.length, length = i + 10; i < length; i++) {
+            //     var html = '<li class="aui-list-item aui-list-item-middle">'+
+            //         '<div class="aui-media-list-item-inner">'+
+            //             '<div class="aui-list-item-media" style="width: 2rem;">'+
+            //                 '<i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>'+
+            //             '</div>'+
+            //             '<div class="aui-list-item-inner aui-list-item-arrow">'+
+            //                 '<div class="aui-list-item-text">'+
+            //                     '<div class="aui-list-item-title">今日</div>'+
+            //                     '<p class="aui-font-size-12">￥<span id="id-day-in-money">0.00</span></p>'+
+            //                 '</div>'+
+            //                 '<div class="aui-list-item-text">'+
+            //                     '<p class="aui-font-size-12" id="id-date">-</p>'+
+            //                     '<p class="aui-font-size-12">￥<span id="id-day-out-money">0.00</span></p>'+
+            //                 '</div>'+
+            //             '</div>'+
+            //         '</div>'+
+            //         '</li>';
+            //     ListUl.insertAdjacentHTML('afterbegin', html);
+            // }
+            callback();
+        });
+    }
+
+
+    /** 获取主页数据 */
+    function getData(jsonData, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
+            method: 'get',
+            data: {
+                values: jsonData
+            }
+        },function(ret, err){
+            if (ret) {
+                // alert( JSON.stringify( ret ) );
+                if (ret['uid'] > 0) {
+                    callback(ret['data']);
+                } else {
+                    api.alert({
+                        title: '重新登录',
+                        msg: '登录验证已过期，请重新登录。',
+                    }, function(ret, err){
+                        goLogout();
+                    });
+                }
+            } else {
+                alert( JSON.stringify( err ) );
+            }
+        });
+    }
+
+    /** 跳转到记账页面 */
+    function goAddFrame() {
+        api.sendEvent({
+            name: 'indexFrame',
+            extra: {
+                name: 'add_frm',
+                index: '2'
+            }
+        });
+    }
+
+    /** 退出登录 */
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    /** 返回命令 */
+    function closeWin() {
+        api.closeWin({
+        });
+    }
+        
+</script>
+</html>
+</html>

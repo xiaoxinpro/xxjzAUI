@@ -7,17 +7,6 @@
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
     <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
     <style type="text/css">
-        table
-        {
-            border-collapse:collapse;
-        }
-
-        table, td, th
-        {
-            border: 1px solid #ddd;
-            border-radius: 2px;
-            text-align: center;
-        }
 
     </style>
 </head>
@@ -42,7 +31,7 @@
         <div class="aui-card-list-content">
             <div class="aui-content">
                 <ul class="aui-list aui-list-in">
-                    <li class="aui-list-item">
+                    <li class="aui-list-item" onclick="goNowMonthList();">
                         <div class="aui-list-item-label-icon">
                             <i class="aui-iconfont aui-icon-forward"></i>
                         </div>
@@ -53,7 +42,7 @@
                             </div>
                         </div>
                     </li>
-                    <li class="aui-list-item">
+                    <li class="aui-list-item" onclick="goNowMonthList();">
                         <div class="aui-list-item-label-icon">
                             <i class="aui-iconfont aui-icon-back"></i>
                         </div>
@@ -64,7 +53,7 @@
                             </div>
                         </div>
                     </li>
-                    <li class="aui-list-item">
+                    <li class="aui-list-item" onclick="goNowMonthList();">
                         <div class="aui-list-item-label-icon">
                             <i class="aui-iconfont aui-icon-info"></i>
                         </div>
@@ -103,7 +92,7 @@
                         </div>
                     </div>
                     </li>
-                    <li class="aui-list-item aui-list-item-middle">
+                    <li class="aui-list-item aui-list-item-middle" onclick="goNowMonthList();">
                     <div class="aui-media-list-item-inner">
                         <div class="aui-list-item-media" style="width: 2rem;">
                             <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
@@ -280,6 +269,34 @@
         });
     }
 
+    /** 显示流水窗体 */
+    function showListWin(pageParam) {
+        api.openWin({
+            name: 'list_win',
+            url: './list_win.html',
+            pageParam: pageParam,
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 0
+        });
+    }
+
+    /** 跳转到本月流水页面 */
+    function goNowMonthList() {
+        var now = new Date();
+        var varYear = now.getFullYear();
+        var varMonth = now.getMonth() + 1;
+        showListWin({
+            type: 'month',
+            year: varYear,
+            month: varMonth
+        });
+    }
+
     /** 跳转到记账页面 */
     function goAddFrame() {
         api.sendEvent({
@@ -292,44 +309,6 @@
     }
 
     /** 退出登录 */
-    function getData(callback) {
-        api.ajax({
-            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/statistic',
-            method: 'get',
-            data: {
-                values: { 
-                    type: 'all'
-                }
-            }
-        },function(ret, err){
-            if (ret) {
-                // alert( JSON.stringify( ret ) );
-                if (ret['uid'] == uid) {
-                    callback(ret['data']);
-                } else {
-                    api.alert({
-                        title: '重新登录',
-                        msg: '登录验证已过期，请重新登录。',
-                    }, function(ret, err){
-                        goLogout();
-                    });
-                }
-            } else {
-                alert( JSON.stringify( err ) );
-            }
-        });
-    }
-
-    function goAddFrame() {
-        api.sendEvent({
-            name: 'indexFrame',
-            extra: {
-                name: 'add_frm',
-                index: '2'
-            }
-        });
-    }
-
     function goLogout() {
         api.sendEvent({
             name: 'xxjzLogout',
