@@ -7,15 +7,65 @@
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
     <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
     <style type="text/css">
+        .aui-bg-info {
+            margin-top:0px; 
+            color:#fff;
+        }
+
+        div.aui-bg-info {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .loading {
+            text-align: center;
+            width: 40px;
+            height: 20px;
+            margin: 0 auto;
+            margin-top:20px;
+        }
+        .loading span {
+            display: inline-block;
+            width: 4px;
+            height: 100%;
+            border-radius: 2px;
+            background: lightgreen;
+            -webkit-animation: load 1s ease infinite;
+        }
+        @-webkit-keyframes load {
+            0%,100% {
+                height: 20px;
+                background: lightgreen;
+            }
+            50% {
+                height: 35px;
+                margin: -7px 0;
+                background: lightblue;
+            }
+        } 
+        .loading span:nth-child(2) {
+            -webkit-animation-delay:0.2s;
+        }
+        .loading span:nth-child(3) {
+            -webkit-animation-delay:0.4s;
+        }
+        .loading span:nth-child(4) {
+            -webkit-animation-delay:0.6s;
+        }
+        .loading span:nth-child(5) {
+            -webkit-animation-delay:0.8s;
+        }
 
     </style>
 </head>
 <body>
     <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
-        <div class="aui-pull-left">
+        <div class="aui-pull-left aui-padded-l-0" >
             <a class=" aui-btn aui-iconfont aui-icon-left" tapmode onclick="closeWin();"></a>
         </div>
-        <div class="aui-title">流水</div>
+        <div class="aui-title"><span id="id-month">8</span>月份账单</div>
         <div class="aui-pull-right">
             <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
         </div>
@@ -23,18 +73,36 @@
     <div id="header-bottom"></div>
     <section class="aui-content aui-refresh-content">
     <div class="aui-card-list">
-        <div class="aui-card-list-header aui-bg-info" style="margin-top:0px;">
-            <div style="color:#fff;">
-                <span class="aui-font-size-20" id="id-month">7</span>
-                <span class="aui-font-size-20">月份</span>
-                <span class="aui-font-size-16"> / </span>
-                <span class="aui-font-size-12" id="id-year">2016</span>
+        <div class="aui-bg-info">
+            <div class="aui-row aui-margin-l-10">
+                <div class="aui-col-xs-8">
+                    <h1 class="aui-bg-info" id="id-sum-over-money">0.00</h1>
+                    <p class="aui-font-size-12 aui-bg-info">￥剩余</p>
+                </div>
+                <div class="aui-col-xs-4">
+                    <div class="aui-pull-right aui-padded-t-5">
+                        <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- <span class="aui-font-size-12" id="id-year">2016</span> -->
+        </div>
+        <div class="aui-bg-info">
+            <div class="aui-row aui-margin-l-15">
+                <div class="aui-col-xs-6">
+                    <h3 class="aui-bg-info" id="id-sum-out-money">0.00</h3>
+                    <p class="aui-font-size-12 aui-bg-info">￥支出</p>
+                </div>
+                <div class="aui-col-xs-6">
+                    <h3 class="aui-bg-info" id="id-sum-in-money">0.00</h3>
+                    <p class="aui-font-size-12 aui-bg-info">￥收入</p>
+                </div>
             </div>
         </div>
 
         <div class="aui-card-list-content">
             <div class="aui-content" id="id-list-ul">
-                <ul class="aui-list aui-media-list">
+                <!-- <ul class="aui-list aui-media-list">
                     <li class="aui-list-header">
                         2016年8月8日
                     </li>
@@ -76,7 +144,7 @@
                         2016年8月7日
                     </li>
                     <li class="aui-list-item aui-list-item-middle">
-                        <div class="aui-media-list-item-inner" onclick="">
+                        <div class="aui-media-list-item-inner" onclick="goEditData(12);">
                             <div class="aui-list-item-media" style="width: 3rem;">
                                 <img src="../image/icon_out.png" class="aui-img-round aui-list-img-sm">
                             </div>
@@ -92,7 +160,7 @@
                         </div>
                     </li>
                     <li class="aui-list-item aui-list-item-middle">
-                        <div class="aui-media-list-item-inner" onclick="">
+                        <div class="aui-media-list-item-inner" onclick="goEditData(23);">
                             <div class="aui-list-item-media" style="width: 3rem;">
                                 <img src="../image/icon_in.png" class="aui-img-round aui-list-img-sm">
                             </div>
@@ -107,10 +175,20 @@
                             </div>
                         </div>
                     </li>
-                </ul>
+                </ul> -->
 
             </div>
         </div>
+    </div>
+<!--     <div class="aui-btn aui-btn-block aui-btn-sm" id="id-load-more" onclick="loadMore();" style="display:none;">
+        加载更多
+    </div> -->
+    <div class="loading" id="id-load-more" onclick="loadMore();" style="display:none;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
     </section>
 
@@ -120,10 +198,23 @@
 <script type="text/javascript" src="../script/base64.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/aui-scroll.js" ></script>
 <script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/countUp.js"></script>
 <script type="text/javascript">
     var uid = 0;
     var valPage = 1;
+    var valPageMax = 1;
+    var sumInMoney = 0;
+    var sumOutMoney = 0;
+    var numAnimOptions = {
+      useEasing : true, 
+      useGrouping : true, 
+      separator : ' ', 
+      decimal : '.', 
+      prefix : '', 
+      suffix : '' 
+    };
     var toast = new auiToast();
     apiready = function(){
         api.parseTapmode();
@@ -170,6 +261,46 @@
 
     /** 初始化页面数据 */
     function initData(callback) {
+        //显示加载动画
+        toast.loading({
+            title:"加载中",
+            duration:2000
+        });
+
+        //清空List列表
+        $api.byId('id-list-ul').innerHTML = ''; 
+
+        //获取数据并显示
+        valPage = 1;
+        showListData(valPage, function(ret){
+            //隐藏加载框
+            toast.hide();
+
+            //全局变量初始化
+            valPageMax = ret.pagemax;
+            sumOutMoney = ret.SumOutMoney;
+            sumInMoney = ret.SumInMoney;
+            $api.byId('id-sum-in-money').innerHTML = '' + sumInMoney;
+            $api.byId('id-sum-out-money').innerHTML = '' + sumOutMoney;
+
+            //剩余金额动画(从0到剩余金额,保留2位小数,0.8秒动画)
+            var overMoney = sumInMoney - sumOutMoney;
+            var numAnim = new CountUp("id-sum-over-money", 0, overMoney, 2, 0.8, numAnimOptions);
+            numAnim.start();
+
+            //显示加载更多按钮
+            if (valPageMax > 1) {
+                $api.byId('id-load-more').style.display = "block";
+            }
+
+            //回调显示数据完成
+            callback();
+        });
+    }
+
+    /** 显示页面数据 */
+    function showListData(p, callback) {
+        //整理Api参数
         var jsonData = {};
         jsonData.type = 'get';
         jsonData.data = BASE64.encoder(JSON.stringify({
@@ -177,39 +308,39 @@
             year: api.pageParam.year,
             month: api.pageParam.month,
             day: api.pageParam.day,
-            page: 1
+            page: p
         }));
 
+        //获取数据并处理
         getData(jsonData, function(ret){
             //alert( JSON.stringify( ret ) );
             var ListUl = $api.byId('id-list-ul');
-            ListUl.innerHTML = ''; //清空List列表
             var ListData = ret.data;
-            var ListDay = ListData[0].actime;
-            var ul_html = '<ul class="aui-list aui-media-list">'+
-                    '<li class="aui-list-header">'+ ListData[0].actime +'</li>';
-            ListUl.insertAdjacentHTML('beforeEnd', ul_html);
+            var arrClass = $api.getStorage('allClass');
+
+
             for (var i = 0; i < ListData.length; i++) {
-                if (ListDay != ListData[i].actime) {
-                    ul_html = '</ul><ul class="aui-list aui-media-list">'+
-                    '<li class="aui-list-header">'+ ListData[i].actime +'</li>';
-                    ListUl.insertAdjacentHTML('beforeEnd', ul_html);
-                    ListDay = ListData[i].actime;
-                } 
+                var strID = 'id-ul-' + ListData[i].actime + '';
+                if (!$api.byId(strID)) {
+                    html = '<ul class="aui-list aui-media-list" id="'+ strID +'">'+
+                        '<li class="aui-list-header">'+ ListData[i].actime +'</li></ul>';
+                    ListUl.insertAdjacentHTML('beforeEnd', html);
+                }
 
                 var ListImage = 'out';
                 if (ListData[i].zhifu == 1) {
                     var ListImage = 'in';
                 }
-                var html = '<li class="aui-list-item aui-list-item-middle">'+
-                        '<div class="aui-media-list-item-inner" onclick="">'+
+
+                html = '<li class="aui-list-item aui-list-item-middle">'+
+                        '<div class="aui-media-list-item-inner" onclick="goEditData('+ ListData[i].acid +');">'+
                             '<div class="aui-list-item-media" style="width: 3rem;">'+
                                 '<img src="../image/icon_'+ListImage+'.png" class="aui-img-round aui-list-img-sm">'+
                             '</div>'+
                             '<div class="aui-list-item-inner aui-list-item-arrow">'+
                                 '<div class="aui-list-item-text">'+
                                     '<div class="aui-list-item-title">'+
-                                        '<p class="aui-font-size-18">'+ListData[i].acclassid+'</p>'+
+                                        '<p class="aui-font-size-18">'+arrClass[ListData[i].acclassid]+'</p>'+
                                         '<p class="aui-font-size-12">备注：'+ListData[i].acremark+'</p>'+
                                     '</div>'+
                                     '<div class="aui-list-item-right aui-font-size-16">￥'+ListData[i].acmoney+'</div>'+
@@ -217,35 +348,11 @@
                             '</div>'+
                         '</div>'+
                     '</li>';
-                ListUl.insertAdjacentHTML('beforeEnd', html);
+                $api.byId(strID).insertAdjacentHTML('beforeEnd', html);
             }
-            ListUl.insertAdjacentHTML('beforeEnd', '</ul>');
-
-            // var lis = ListUl.querySelectorAll('.aui-list-item');
-            // for (var i = lis.length, length = i + 10; i < length; i++) {
-            //     var html = '<li class="aui-list-item aui-list-item-middle">'+
-            //         '<div class="aui-media-list-item-inner">'+
-            //             '<div class="aui-list-item-media" style="width: 2rem;">'+
-            //                 '<i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>'+
-            //             '</div>'+
-            //             '<div class="aui-list-item-inner aui-list-item-arrow">'+
-            //                 '<div class="aui-list-item-text">'+
-            //                     '<div class="aui-list-item-title">今日</div>'+
-            //                     '<p class="aui-font-size-12">￥<span id="id-day-in-money">0.00</span></p>'+
-            //                 '</div>'+
-            //                 '<div class="aui-list-item-text">'+
-            //                     '<p class="aui-font-size-12" id="id-date">-</p>'+
-            //                     '<p class="aui-font-size-12">￥<span id="id-day-out-money">0.00</span></p>'+
-            //                 '</div>'+
-            //             '</div>'+
-            //         '</div>'+
-            //         '</li>';
-            //     ListUl.insertAdjacentHTML('afterbegin', html);
-            // }
-            callback();
+            callback(ret);
         });
     }
-
 
     /** 获取主页数据 */
     function getData(jsonData, callback) {
@@ -272,6 +379,52 @@
                 alert( JSON.stringify( err ) );
             }
         });
+    }
+
+
+    /** 上拉加载 */
+    var scroll = new auiScroll({
+        listen:true, //是否监听滚动高度，开启后将实时返回滚动高度
+        distance:200 //判断到达底部的距离，isToBottom为true
+    },function(ret){
+        if (ret.isToBottom) {
+            if (valPage < valPageMax) {
+                loadMore();
+            }
+        }
+    });
+
+    /** 加载更多 */
+    function loadMore() {
+        if (valPage >= valPageMax) {
+            toast.success({
+                title:"加载完",
+                duration:2000
+            });
+        } else {
+            //显示加载动画
+            // toast.loading({
+            //     title:"加载中",
+            //     duration:2000
+            // });
+
+            //获取下一页数据
+            valPage = valPage + 1;
+            showListData(valPage, function(ret){
+                //隐藏加载框
+                toast.hide();
+
+                //隐藏加载更多按钮
+                if (ret.pagemax == valPage) {
+                    $api.byId('id-load-more').style.display = "none";
+                }
+            });
+        }
+    }
+
+    /** 跳转到编辑页 */
+    function goEditData(id) {
+        alert('记账id='+id);
     }
 
     /** 跳转到记账页面 */
