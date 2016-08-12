@@ -102,6 +102,7 @@
                 // alert( JSON.stringify( ret.data.in ) );
                 $api.setStorage('inClass', ret.data.in);
                 $api.setStorage('outClass', ret.data.out);
+                $api.setStorage('allClass', ret.data.all);
                 callback();
             } else {
                 alert( JSON.stringify( err ) );
