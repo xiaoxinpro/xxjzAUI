@@ -128,7 +128,9 @@
                 element:bar[i],
                 repeatClick:false
             },function(ret){
-                initList();
+                $api.byId('add-money').value = '';
+                $api.byId('add-mark').value = '';
+                $api.byId('add-time').value = strNow;
                 if (ret.index == 1) {
                     // alert('添加支出');
                     $api.byId('add-money').placeholder = '输入支出金额';
@@ -171,7 +173,7 @@
 
         $api.byId('add-class').options.length=0;
         for (var key in ClassList) {
-            $api.byId('add-class').options.add(new Option(ClassList[key]),key);
+            $api.byId('add-class').options.add(new Option(ClassList[key],key));
         }
     }
 
