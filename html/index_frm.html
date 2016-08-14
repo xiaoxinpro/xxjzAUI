@@ -75,7 +75,7 @@
         <div class="aui-card-list-content">
             <div class="aui-content">
                 <ul class="aui-list aui-media-list">
-                    <li class="aui-list-item aui-list-item-middle">
+                    <li class="aui-list-item aui-list-item-middle" onclick="goNowDayList();">
                     <div class="aui-media-list-item-inner">
                         <div class="aui-list-item-media" style="width: 2rem;">
                             <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
@@ -109,7 +109,7 @@
                         </div>
                     </div>
                     </li>
-                    <li class="aui-list-item aui-list-item-middle">
+                    <li class="aui-list-item aui-list-item-middle" onclick="goNowYearList();">
                     <div class="aui-media-list-item-inner">
                         <div class="aui-list-item-media" style="width: 2rem;">
                             <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
@@ -157,6 +157,7 @@
 <script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
 <script type="text/javascript">
     var uid = 0;
+    var now = new Date();
     var toast = new auiToast();
     apiready = function(){
         api.parseTapmode();
@@ -272,8 +273,8 @@
     /** 显示流水窗体 */
     function showListWin(pageParam) {
         api.openWin({
-            name: 'list_win',
-            url: './list_win.html',
+            name: '' + pageParam.name + '',
+            url: './' + pageParam.name + '.html',
             pageParam: pageParam,
             slidBackEnabled: true,
             slidBackType: 'edge',
@@ -287,13 +288,42 @@
 
     /** 跳转到本月流水页面 */
     function goNowMonthList() {
-        var now = new Date();
         var varYear = now.getFullYear();
         var varMonth = now.getMonth() + 1;
         showListWin({
+            name: 'list_win',
             type: 'month',
             year: varYear,
             month: varMonth
+        });
+    }
+
+    /** 跳转到今日账单页面 */
+    function goNowDayList() {
+        var varYear = now.getFullYear();
+        var varMonth = now.getMonth() + 1;
+        var varDay = now.getDate();
+
+        showListWin({
+            name: 'list_day_win',
+            type: 'day',
+            year: varYear,
+            month: varMonth,
+            day: varDay
+        });
+    }
+
+    /** 跳转到今年账单页面 */
+    function goNowYearList() {
+        var varYear = now.getFullYear();
+        var varMonth = now.getMonth() + 1;
+        var varDay = now.getDate;
+        showListWin({
+            name: 'list_year_win',
+            type: 'year',
+            year: varYear,
+            month: varMonth,
+            day: varDay
         });
     }
 
