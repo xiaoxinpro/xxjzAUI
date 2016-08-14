@@ -6,10 +6,11 @@
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
     <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
     <style type="text/css">
         .aui-bg-info {
             margin-top:0px; 
-            color:#fff;
+            color:#fff; /*#283593*/
         }
 
         div.aui-bg-info {
@@ -17,6 +18,16 @@
             padding-bottom: 0.25rem;
             padding-left: 0.75rem;
             padding-right: 0.75rem;
+        }
+
+        .aui-list .aui-list-header {
+            background-color: #eeeeee;
+            color: #616161;
+        }
+
+        .aui-list:before,
+        .aui-list:after {
+            background-color: #eeeeee;
         }
 
         .loading {
@@ -65,7 +76,7 @@
         <div class="aui-pull-left aui-padded-l-0" >
             <a class=" aui-btn aui-iconfont aui-icon-left" tapmode onclick="closeWin();"></a>
         </div>
-        <div class="aui-title"><span id="id-month">8</span>月份账单</div>
+        <div class="aui-title"><span id="id-month"></span>月份账单</div>
         <div class="aui-pull-right">
             <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
         </div>
@@ -77,11 +88,11 @@
             <div class="aui-row aui-margin-l-10">
                 <div class="aui-col-xs-8">
                     <h1 class="aui-bg-info" id="id-sum-over-money">0.00</h1>
-                    <p class="aui-font-size-12 aui-bg-info">￥剩余</p>
+                    <p class="aui-font-size-12 aui-bg-info">&nbsp;￥剩余</p>
                 </div>
                 <div class="aui-col-xs-4">
-                    <div class="aui-pull-right aui-padded-t-5">
-                        <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
+                    <div class="aui-pull-right aui-padded-t-10 aui-padded-r-5">
+                        <i class="fa fa-bar-chart" style="font-size: 1.25rem;"></i>
                     </div>
                 </div>
             </div>
@@ -104,7 +115,27 @@
             <div class="aui-content" id="id-list-ul">
                 <!-- <ul class="aui-list aui-media-list">
                     <li class="aui-list-header">
-                        2016年8月8日
+                        <div class="aui-row">
+                            <div class="aui-col-xs-3">2016年8月8日</div>
+                            <div class="aui-col-xs-3">
+                                <div class="aui-pull-right">
+                                    <i class="fa fa-minus-square-o"></i>
+                                    <span id="">10.00</span>
+                                </div>
+                            </div>
+                            <div class="aui-col-xs-3">
+                                <div class="aui-pull-right">
+                                    <i class="fa fa-plus-square-o"></i>
+                                    <span id="">0.00</span>
+                                </div>
+                            </div>
+                            <div class="aui-col-xs-3">
+                                <div class="aui-pull-right">
+                                    <i class="fa fa-rmb"></i>
+                                    <span id="">-10.00</span>
+                                </div>
+                            </div>
+                        </div>
                     </li>
                     <li class="aui-list-item aui-list-item-middle">
                         <div class="aui-media-list-item-inner" onclick="">
@@ -224,6 +255,8 @@
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+        //顶部导航栏标题
+        $api.byId('id-month').innerHTML = api.pageParam.month;
 
         // toast.loading({
         //     title:"加载中",
@@ -317,19 +350,55 @@
             var ListUl = $api.byId('id-list-ul');
             var ListData = ret.data;
             var arrClass = $api.getStorage('allClass');
-
+            var inMoney = 0.00;
+            var outMoney = 0.00;
+            var overMoney = 0.00;
 
             for (var i = 0; i < ListData.length; i++) {
                 var strID = 'id-ul-' + ListData[i].actime + '';
                 if (!$api.byId(strID)) {
                     html = '<ul class="aui-list aui-media-list" id="'+ strID +'">'+
-                        '<li class="aui-list-header">'+ ListData[i].actime +'</li></ul>';
+                        '<li class="aui-list-header">'+
+                            '<div class="aui-row">'+
+                                '<div class="aui-col-xs-4">'+ ListData[i].actime +'</div>'+
+                                // '<div class="aui-col-xs-2">'+
+                                //     '<div class="aui-pull-right">'+
+                                //         '<i class="fa fa-plus-square-o"></i>&nbsp;'+
+                                //         '<span id="id-in-money-'+ strID +'">0.00</span>'+
+                                //     '</div>'+
+                                // '</div>'+
+                                // '<div class="aui-col-xs-3">'+
+                                //     '<div class="aui-pull-right">'+
+                                //         '<i class="fa fa-minus-square-o"></i>&nbsp;'+
+                                //         '<span id="id-out-money-'+ strID +'">0.00</span>'+
+                                //     '</div>'+
+                                // '</div>'+
+                                // '<div class="aui-col-xs-3">'+
+                                //     '<div class="aui-pull-right">'+
+                                //         '<i class="fa fa-rmb"></i>&nbsp;'+
+                                //         '<span id="id-over-money-'+ strID +'">0.00</span>'+
+                                //     '</div>'+
+                                // '</div>'+
+                            '</div>'+
+                        '</li></ul>';
                     ListUl.insertAdjacentHTML('beforeEnd', html);
+                    inMoney = 0.00;
+                    outMoney = 0.00;
+                    overMoney = 0.00;
                 }
-
-                var ListImage = 'out';
+                
                 if (ListData[i].zhifu == 1) {
                     var ListImage = 'in';
+                    // inMoney +=  parseFloat(ListData[i].acmoney);
+                    // overMoney += inMoney;
+                    // $api.byId('id-in-money-' + strID).innerHTML = '' + inMoney.toFixed(2) + '';
+                    // $api.byId('id-over-money-' + strID).innerHTML = '' + overMoney.toFixed(2) + '';
+                } else {
+                    var ListImage = 'out';
+                    // outMoney +=  parseFloat(ListData[i].acmoney);
+                    // overMoney -= outMoney;
+                    // $api.byId('id-out-money-' + strID).innerHTML = '' + outMoney.toFixed(2) + '';
+                    // $api.byId('id-over-money-' + strID).innerHTML = '' + overMoney.toFixed(2) + '';
                 }
 
                 html = '<li class="aui-list-item aui-list-item-middle">'+
@@ -397,17 +466,8 @@
     /** 加载更多 */
     function loadMore() {
         if (valPage >= valPageMax) {
-            toast.success({
-                title:"加载完",
-                duration:2000
-            });
+            location.reload(); //刷新页面
         } else {
-            //显示加载动画
-            // toast.loading({
-            //     title:"加载中",
-            //     duration:2000
-            // });
-
             //获取下一页数据
             valPage = valPage + 1;
             showListData(valPage, function(ret){
