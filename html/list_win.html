@@ -303,32 +303,34 @@
         //清空List列表
         $api.byId('id-list-ul').innerHTML = ''; 
 
-        //获取数据并显示
-        valPage = 1;
-        showListData(valPage, function(ret){
-            //隐藏加载框
-            toast.hide();
+        setTimeout(function(){
+            //获取数据并显示
+            valPage = 1;
+            showListData(valPage, function(ret){
+                //隐藏加载框
+                toast.hide();
 
-            //全局变量初始化
-            valPageMax = ret.pagemax;
-            sumOutMoney = ret.SumOutMoney;
-            sumInMoney = ret.SumInMoney;
-            $api.byId('id-sum-in-money').innerHTML = '' + sumInMoney;
-            $api.byId('id-sum-out-money').innerHTML = '' + sumOutMoney;
+                //全局变量初始化
+                valPageMax = ret.pagemax;
+                sumOutMoney = ret.SumOutMoney;
+                sumInMoney = ret.SumInMoney;
+                $api.byId('id-sum-in-money').innerHTML = '' + sumInMoney;
+                $api.byId('id-sum-out-money').innerHTML = '' + sumOutMoney;
 
-            //剩余金额动画(从0到剩余金额,保留2位小数,0.8秒动画)
-            var overMoney = sumInMoney - sumOutMoney;
-            var numAnim = new CountUp("id-sum-over-money", 0, overMoney, 2, 0.8, numAnimOptions);
-            numAnim.start();
+                //剩余金额动画(从0到剩余金额,保留2位小数,0.8秒动画)
+                var overMoney = sumInMoney - sumOutMoney;
+                var numAnim = new CountUp("id-sum-over-money", 0, overMoney, 2, 0.8, numAnimOptions);
+                numAnim.start();
 
-            //显示加载更多按钮
-            if (valPageMax > 1) {
-                $api.byId('id-load-more').style.display = "block";
-            }
+                //显示加载更多按钮
+                if (valPageMax > 1) {
+                    $api.byId('id-load-more').style.display = "block";
+                }
 
-            //回调显示数据完成
-            callback();
-        });
+                //回调显示数据完成
+                callback();
+            });
+        }, 200);
     }
 
     /** 显示页面数据 */
