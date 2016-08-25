@@ -31,12 +31,12 @@
 
             <!-- 金额 -->
             <li class="aui-list-item">
-                <div class="aui-list-item-inner">
+                <div class="aui-list-item-inner" id="div-add-money">
                     <div class="aui-list-item-label">
                         金额
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="number" id="add-money" step=0.01 placeholder="输入支出金额" />
+                        <input type="number" id="add-money" step=0.01 placeholder="输入支出金额" onchange="cheakMoney();" />
                     </div>
                 </div>
             </li>
@@ -47,7 +47,7 @@
                         分类
                     </div>
                     <div class="aui-list-item-input">
-                        <select id="add-class" >
+                        <select id="add-class" onchange="cheakClass();">
                             <option value="1">分类名称</option>
                         </select>
                     </div>
@@ -60,7 +60,7 @@
                         备注
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="text" id="add-mark" placeholder="输入备注信息" />
+                        <input type="text" id="add-mark" placeholder="输入备注信息" onchange="cheakMark();"/>
                     </div>
                 </div>
             </li>
@@ -71,7 +71,7 @@
                         时间
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="date" id="add-time" value="2016-08-01" />
+                        <input type="date" id="add-time" value="2016-08-01" onchange="cheakTime();"/>
                     </div>
                 </div>
             </li>
@@ -179,9 +179,53 @@
         }
     }
 
+    /** 显示校验结果 */
+    function showCheak(dom, cheak) {
+        if (cheak) {
+            $api.removeCls(dom, 'aui-warning');
+            $api.addCls(dom, 'aui-success');
+        } else {
+            $api.removeCls(dom, 'aui-success');
+            $api.addCls(dom, 'aui-warning');
+        }
+    }
+
+    /** 校验输入金额 */
+    function cheakMoney() {
+        var pat = RegExp("([1-9]\d*(\.\d{1,2})?|0\.((\d?[1-9])|([1-9]0?)))");
+        var dom = $api.byId('add-money');
+        var cheak = pat.test(dom.value);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验分类 */
+    function cheakClass() {
+        var dom = $api.byId('add-class');
+        var cheak = (Number(dom.value) > 0);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验输入备注 */
+    function cheakMark() {
+        var dom = $api.byId('add-mark');
+        var cheak = ($api.trim(dom.value).length > 0);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验输入时间 */
+    function cheakTime() {
+        var dom = $api.byId('add-time');
+        var cheak = (dom.value.length == 10);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
     /** 校验记账数据 */
-    function cheakAddData(data, callback) {
-        if (!parseFloat(data.acmoney)) {
+    function cheakAddData() {
+        if (!cheakMoney()) {
             api.alert({
                 title: '金额错误',
                 msg: '请输入一个有效的金额!',
@@ -192,7 +236,7 @@
             return false;
         }
 
-        if (data.acclassid.length == 0) {
+        if (!cheakClass()) {
             api.alert({
                 title: '分类出错',
                 msg: '请务必选择一个有效分类，若没有分类请先新建分类！',
@@ -200,12 +244,22 @@
             return false;
         }
 
-        if (data.acremark.length == 0) {
+        if (!cheakMark()) {
             api.alert({
                 title: '备注错误',
                 msg: '备注信息不能为空!',
             }, function(ret, err){
                 $api.byId('add-mark').focus;
+            });
+            return false;
+        }
+
+        if (!cheakTime()) {
+            api.alert({
+                title: '时间错误',
+                msg: '时间格式有误，请重新输入!',
+            }, function(ret, err){
+                $api.byId('add-time').focus;
             });
             return false;
         }
@@ -250,7 +304,7 @@
         addData.acremark  = $api.byId('add-mark').value;
         addData.zhifu     = $api.byId('add-type').value;
         //alert(JSON.stringify(addData));
-        if (!cheakAddData(addData)) {
+        if (!cheakAddData()) {
             return;
         }
         var strData = BASE64.encoder(JSON.stringify(addData));
