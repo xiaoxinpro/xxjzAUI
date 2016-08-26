@@ -79,9 +79,6 @@
         </div>
     </div>
     </section>
-
-    <p>年账单</p>
-    <p><a onclick="goLogout();">退出</a></p>
 </body>
 <script type="text/javascript" src="../script/base64.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
@@ -238,6 +235,7 @@
             if (ret) {
                 // alert( JSON.stringify( ret ) );
                 if (ret['uid'] > 0) {
+                    uid = ret['uid'];
                     callback(ret['data']);
                 } else {
                     api.alert({
@@ -275,7 +273,14 @@
 
     /** 跳转到编辑页 */
     function goEditData(id) {
-        alert('记账id='+id);
+        api.sendEvent({
+            name: 'editWin',
+            extra: {
+                name: 'edit_win', 
+                id: id,
+                uid: uid
+            }
+        });
     }
 
     /** 跳转到记账页面 */

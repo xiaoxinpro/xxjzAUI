@@ -112,6 +112,16 @@
         </div>
 
         <div class="aui-card-list-content">
+            <div class="aui-content" id="id-list-ul-none">
+                <div class="aui-info aui-margin-t-15 aui-padded-l-10 aui-padded-r-10 aui-padded-b-15" onclick="goAddFrame();">
+                    <div class="aui-info-item aui-font-size-14">
+                        这个月还没有记账哦~
+                    </div>
+                    <div class="aui-info-item aui-font-size-16 aui-text-warning">
+                        记一笔&nbsp;<i class="aui-iconfont aui-icon-right"></i> 
+                    </div>
+                </div>
+            </div>
             <div class="aui-content" id="id-list-ul">
                 <!-- <ul class="aui-list aui-media-list">
                     <li class="aui-list-header">
@@ -222,9 +232,6 @@
         <span></span>
     </div>
     </section>
-
-    <p>主页</p>
-    <p><a onclick="goLogout();">退出</a></p>
 </body>
 <script type="text/javascript" src="../script/base64.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
@@ -300,12 +307,15 @@
             duration:2000
         });
 
+        //关闭上拉监听
+        valPage = 1;
+        valPageMax = 1;
+
         //清空List列表
         $api.byId('id-list-ul').innerHTML = ''; 
 
         setTimeout(function(){
             //获取数据并显示
-            valPage = 1;
             showListData(valPage, function(ret){
                 //隐藏加载框
                 toast.hide();
@@ -357,6 +367,7 @@
             var overMoney = 0.00;
 
             for (var i = 0; i < ListData.length; i++) {
+                $api.byId('id-list-ul-none').innerHTML = '';
                 var strID = 'id-ul-' + ListData[i].actime + '';
                 if (!$api.byId(strID)) {
                     html = '<ul class="aui-list aui-media-list" id="'+ strID +'">'+
@@ -437,6 +448,7 @@
             if (ret) {
                 // alert( JSON.stringify( ret ) );
                 if (ret['uid'] > 0) {
+                    uid = ret['uid'];
                     callback(ret['data']);
                 } else {
                     api.alert({
@@ -486,7 +498,14 @@
 
     /** 跳转到编辑页 */
     function goEditData(id) {
-        alert('记账id='+id);
+        api.sendEvent({
+            name: 'editWin',
+            extra: {
+                name: 'edit_win', 
+                id: id,
+                uid: uid
+            }
+        });
     }
 
     /** 跳转到记账页面 */
