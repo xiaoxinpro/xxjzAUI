@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+        input[type="date"] {
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-pull-left aui-padded-l-0" >
+            <a class=" aui-btn aui-iconfont aui-icon-left" tapmode onclick="closeWin();"></a>
+        </div>
+        <div class="aui-title">
+            编辑
+        </div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+            <!-- 金额 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner" id="div-edit-money">
+                    <div class="aui-list-item-label">
+                        金额
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="number" id="edit-money" step=0.01 placeholder="输入支出金额" onchange="cheakMoney();" />
+                    </div>
+                </div>
+            </li>
+
+            <!-- 类别 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        收支
+                    </div>
+                    <div class="aui-list-item-input">
+                        <label><input class="aui-radio" type="radio" name="edit-type" value="2" onclick="showClass('out');"> 支出</label>&nbsp;
+                        <label><input class="aui-radio" type="radio" name="edit-type" value="1" onclick="showClass('in');"> 收入</label>
+                    </div>
+                </div>
+            </li>
+            <!-- <input type="hidden" id="edit-type" value="2"> -->
+
+            <!-- 分类 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        分类
+                    </div>
+                    <div class="aui-list-item-input">
+                        <select id="edit-class" onchange="cheakClass();">
+                            <option value="1">分类名称</option>
+                        </select>
+                    </div>
+                </div>
+            </li>
+            <!-- 备注 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        备注
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="edit-mark" placeholder="输入备注信息" onchange="cheakMark();"/>
+                    </div>
+                </div>
+            </li>
+            <!-- 时间 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        时间
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="date" id="edit-time" value="2016-08-01" onchange="cheakTime();"/>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdEdit();">编辑</div>
+        </p>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-danger aui-btn-block aui-btn-sm" onclick="cmdDel();">删除</div>
+        </p>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-block aui-btn-sm" onclick="closeWin();">返回</div>
+        </p>
+
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/base64.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var toast = new auiToast();
+    var now = new Date();
+    var strNow = '';
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        toast.loading({
+            title:"加载中",
+            duration:2000
+        },function(ret){
+            initList();
+        });
+        
+    }
+
+    /** 初始化表单 */
+    function initList() {
+        var editData = {};
+        editData.acid = api.pageParam.id;
+        editData.jiid = api.pageParam.uid;
+        var strData = BASE64.encoder(JSON.stringify(editData));
+        getIdData(strData, function(data){
+            toast.hide();
+            $api.byId('edit-money').value = data.acmoney;
+            $api.byId('edit-mark').value = data.acremark;
+            $api.byId('edit-time').value = data.actime;
+            setRadioBoxValue('edit-type', data.zhifu);
+            if (data.zhifu == 1) {
+                showClass('in');
+            } else {
+                showClass('out');
+            }
+            $api.byId('edit-class').value = data.acclassid;
+        });
+    }
+
+    /** 设置单选框指定值选中 */
+    function setRadioBoxValue(radioName, radioValue) {
+        var obj = document.getElementsByName(radioName);
+        for(i=0; i<obj.length;i++)  {
+            if(obj[i].value == radioValue)  { 
+                obj[i].checked = true;
+            } else {
+                obj[i].checked = false;
+            }
+        }  
+    }
+
+    /** 获取单选框的值 */
+    function getRadioBoxValue(radioName) 
+    { 
+        var obj = document.getElementsByName(radioName); //这个是以标签的name来取控件
+        for(i=0; i<obj.length;i++)  {
+            if(obj[i].checked)  { 
+                return  obj[i].value; 
+            } 
+        }     
+        return "undefined";    
+    }
+
+    /** 初始化显示分类(收支类别) */
+    function showClass(type) {
+        if (type == 'in') {
+            var ClassList = $api.getStorage('inClass');
+        } else {
+            var ClassList = $api.getStorage('outClass');
+        }
+
+        $api.byId('edit-class').options.length=0;
+        for (var key in ClassList) {
+            $api.byId('edit-class').options.add(new Option(ClassList[key],key));
+        }
+    }
+
+    /** 获取指定id的记账数据 */
+    function getIdData(data, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
+            method: 'get',
+            data: {
+                values: { 
+                    type: 'get_id',
+                    data: data
+                }
+            }
+        }, function(ret, err) {
+            var msg = '服务器无法连接，请稍后再试！';
+            if (ret) {
+                if (ret.uid) {
+                    if (ret.uid == api.pageParam.uid) {
+                        //alert(JSON.stringify(ret.data));
+                        callback(ret.data);
+                        return;
+                    }
+                }
+                msg = ret.data;
+            }
+            api.alert({
+                title: '获取数据失败',
+                msg: msg
+            }, function(ret, err) {
+                goLogout();
+            });
+        });
+    }
+
+    /** 显示校验结果 */
+    function showCheak(dom, cheak) {
+        if (cheak) {
+            $api.removeCls(dom, 'aui-warning');
+            $api.addCls(dom, 'aui-success');
+        } else {
+            $api.removeCls(dom, 'aui-success');
+            $api.addCls(dom, 'aui-warning');
+        }
+    }
+
+    /** 校验输入金额 */
+    function cheakMoney() {
+        var pat = RegExp("([1-9]\d*(\.\d{1,2})?|0\.((\d?[1-9])|([1-9]0?)))");
+        var dom = $api.byId('edit-money');
+        var cheak = pat.test(dom.value);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验分类 */
+    function cheakClass() {
+        var dom = $api.byId('edit-class');
+        var cheak = (Number(dom.value) > 0);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验输入备注 */
+    function cheakMark() {
+        var dom = $api.byId('edit-mark');
+        var cheak = ($api.trim(dom.value).length > 0);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验输入时间 */
+    function cheakTime() {
+        var dom = $api.byId('edit-time');
+        var cheak = (dom.value.length == 10);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+    /** 校验记账数据 */
+    function cheakEditData() {
+        if (!cheakMoney()) {
+            api.alert({
+                title: '金额错误',
+                msg: '请输入一个有效的金额!',
+            }, function(ret, err){
+                $api.byId('edit-money').value = '';
+                $api.byId('edit-money').focus;
+            });
+            return false;
+        }
+
+        if (!cheakClass()) {
+            api.alert({
+                title: '分类出错',
+                msg: '请务必选择一个有效分类，若没有分类请先新建分类！',
+            });
+            return false;
+        }
+
+        if (!cheakMark()) {
+            api.alert({
+                title: '备注错误',
+                msg: '备注信息不能为空!',
+            }, function(ret, err){
+                $api.byId('edit-mark').focus;
+            });
+            return false;
+        }
+
+        if (!cheakTime()) {
+            api.alert({
+                title: '时间错误',
+                msg: '时间格式有误，请重新输入!',
+            }, function(ret, err){
+                $api.byId('edit-time').focus;
+            });
+            return false;
+        }
+        
+        return true;
+    }
+
+    /** 发送记账数据(data数组, 回调函数) */
+    function sendEditData(data, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
+            method: 'post',
+            data: {
+                values: { 
+                    type: 'edit',
+                    data: data
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                //alert( JSON.stringify( ret ) );
+                callback(ret);
+            } else {
+                //alert( JSON.stringify( err ) );
+                callback({
+                    uid: 0,
+                    data: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
+    }
+
+    function cmdEdit() {
+        var editData = {};
+        editData.acid      = api.pageParam.id;
+        editData.acmoney   = $api.byId('edit-money').value;
+        editData.acclassid = $api.byId('edit-class').value;
+        editData.actime    = $api.byId('edit-time').value;
+        editData.acremark  = $api.byId('edit-mark').value;
+        editData.zhifu     = getRadioBoxValue('edit-type');
+        //alert(JSON.stringify(editData));
+        if (!cheakEditData()) {
+            return;
+        }
+        var strData = BASE64.encoder(JSON.stringify(editData));
+        toast.loading({
+            title:"加载中",
+            duration:2000
+        },function(ret){
+            sendEditData(strData,function(ret){
+                toast.hide();
+                if (ret) {
+                    //alert(JSON.stringify(ret));
+                    if (ret.uid) {
+                        if (ret.data.ret) {
+                            //显示记账完成提示框
+                            toast.success({
+                                title: '编辑完成',
+                                duration:600
+                            });
+
+                            //发送主页数据刷新事件
+                            api.sendEvent({
+                                name: 'indexInitData',
+                                extra: {
+                                    send: 'edit_win', 
+                                    receive: 'index_frm'
+                                }
+                            });
+
+                            //延时页面跳转
+                            setTimeout(function(){
+                                closeWin();
+                            }, 500);
+                        } else {
+                            //记账失败
+                            api.alert({
+                                title: '编辑失败',
+                                msg: ret.data.msg
+                            });
+                        }
+                    } else {
+                        //未登录
+                        toast.fail({
+                            title: '未登录',
+                            duration:1000
+                        },function(){});
+
+                        //延时页面跳转
+                        setTimeout(function(){
+                            goLogout();
+                        }, 900);
+                    }
+                } else {
+                    api.alert({
+                        title: '编辑失败',
+                        msg: '连接服务器失败，请稍后再试！'
+                    },function(){});
+                }
+            });  
+            // setTimeout(function(){
+            //     toast.hide();
+            // }, 3000)
+        });
+    }
+
+    /** 发送删除数据(acid) */
+    function sendDelData(data, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
+            method: 'post',
+            data: {
+                values: { 
+                    type: 'del',
+                    data: data
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                //alert( JSON.stringify( ret ) );
+                callback(ret);
+            } else {
+                //alert( JSON.stringify( err ) );
+                callback({
+                    uid: 0,
+                    data: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
+    }
+
+    function cmdDel() {
+        var editData = {};
+        editData.acid = api.pageParam.id;
+        var strData = BASE64.encoder(JSON.stringify(editData));
+
+        api.confirm({
+            title: '删除',
+            msg: '确定要删除该条记账？',
+            buttons: ['删除', '取消']
+        }, function(ret, err) {
+            if (ret.buttonIndex == 1) {
+                toast.loading({
+                    title:"删除中",
+                    duration:2000
+                },function(ret){
+                    sendDelData(strData, function(ret){
+                        toast.hide();
+                        if (ret) {
+                            if (ret.uid) {
+                                if (ret.data.ret) {
+                                    //显示删除成功
+                                    toast.success({
+                                        title: '删除成功',
+                                        duration: 500
+                                    });
+
+                                    //发送主页数据刷新事件
+                                    api.sendEvent({
+                                        name: 'indexInitData',
+                                        extra: {
+                                            send: 'edit_win', 
+                                            receive: 'index_frm'
+                                        }
+                                    });
+
+                                    //延时页面跳转
+                                    setTimeout(function(){
+                                        closeWin();
+                                    }, 500);
+
+                                    return;
+                                }
+                            }
+                        }
+                        toast.fail({
+                            title: '删除失败',
+                            duration: 1000
+                        });
+                    });
+                });
+            }
+        });
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+
+</script>
+</html>
