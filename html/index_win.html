@@ -57,12 +57,25 @@
         }, function(ret, err){
             if( ret ){
                 //alert( JSON.stringify( ret ) );
+                closeToWin();
                 openFrame(ret.value.name,ret.value.reload);
                 if (ret.value.index) {
                     tab.setActive(ret.value.index);
                 }
             }else{
                  alert( JSON.stringify( err ) );
+            }
+        });
+
+        //编辑页跳转监听
+        api.addEventListener({
+            name: 'editWin'
+        }, function(ret, err) {
+            if (ret) {
+                //alert(JSON.stringify(ret));
+                openWin(ret.value);
+            } else {
+                alert(JSON.stringify(err));
             }
         });
 
@@ -147,19 +160,24 @@
         })
     }
 
-    function openWin(name){
-        var delay = 0;
-        if(api.systemType != 'ios'){
-            delay = 300;
-        }
+    function openWin(pageParam){
         api.openWin({
-            name: ''+name+'',
-            url: ''+name+'.html',
-            bounces:false,
-            reload: true,
-            delay: delay,
-            slidBackEnabled:true,
-            vScrollBarEnabled:false
+            name: ''+pageParam.name+'',
+            url: ''+pageParam.name+'.html',
+            pageParam: pageParam,
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 100
+        });
+    }
+
+    function closeToWin() {
+        api.closeToWin({
+            name: 'index_win'
         });
     }
 
