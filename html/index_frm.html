@@ -154,7 +154,6 @@
 <script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
 <script type="text/javascript">
     var uid = 0;
-    var now = new Date();
     var toast = new auiToast();
     apiready = function(){
         api.parseTapmode();
@@ -285,6 +284,7 @@
 
     /** 跳转到本月流水页面 */
     function goNowMonthList() {
+        var now = new Date();
         var varYear = now.getFullYear();
         var varMonth = now.getMonth() + 1;
         showListWin({
@@ -297,6 +297,7 @@
 
     /** 跳转到今日账单页面 */
     function goNowDayList() {
+        var now = new Date();
         var varYear = now.getFullYear();
         var varMonth = now.getMonth() + 1;
         var varDay = now.getDate();
@@ -312,6 +313,7 @@
 
     /** 跳转到今年账单页面 */
     function goNowYearList() {
+        var now = new Date();
         var varYear = now.getFullYear();
         var varMonth = now.getMonth() + 1;
         var varDay = now.getDate;
