@@ -6,7 +6,9 @@
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
     <style type="text/css">
-		
+        input[type="date"] {
+            padding: 0.5rem 0;
+        }
     </style>
 </head>
 <body>
@@ -17,10 +19,90 @@
         </div>
     </header>
     <div id="header-bottom"></div>
-	<p>查找</p>
+    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+
+            <!-- 类别 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        选择收支
+                    </div>
+                    <div class="aui-list-item-input">
+                        <select id="find-type" onchange="changeType();">
+                            <option value="0">全部</option>
+                            <option value="1">收入</option>
+                            <option value="2">支出</option>
+                        </select>
+                    </div>
+                </div>
+            </li>
+            <!-- 分类 -->
+            <li class="aui-list-item" id="li-class">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        选择分类
+                    </div>
+                    <div class="aui-list-item-input">
+                        <select id="find-class">
+                            <option value="0">全部</option>
+                        </select>
+                    </div>
+                </div>
+            </li>
+            <!-- 时间 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        起始时间
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="date" id="find-time-start" placeholder="选择起始时间" />
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        终止时间
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="date" id="find-time-end" placeholder="选择终止时间" />
+                    </div>
+                </div>
+            </li>
+
+            <!-- 备注 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        备注信息
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="find-mark" placeholder="输入备注信息" />
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdFind();">搜索</div>
+        </p>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-danger aui-btn-block aui-btn-sm" onclick="cmdReload();">重置</div>
+        </p>
+
+        <p class="aui-margin-b-15">
+            <div class="aui-btn aui-btn-block aui-btn-sm" onclick="cmdReturn();">返回</div>
+        </p>
+
+    </div>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
+    var uid = 0;
     apiready = function(){
         api.parseTapmode();
         //不支持沉浸式效果
@@ -29,6 +111,125 @@
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //初始化用户数据
+        api.getPrefs({
+            key: 'user'
+        }, function(ret, err){
+            uid = JSON.parse(ret.value).uid;
+        });
+
+        //表单初始化
+        initFindFrom();
     }
+
+    /** 初始化表单 */
+    function initFindFrom() {
+        $api.byId('find-type').value = 0;
+        $api.byId('find-time-start').value = '';
+        $api.byId('find-time-end').value = '';
+        $api.byId('find-mark').value = '';
+        changeType();
+    }
+
+    /** 设置分类(收支类别) */
+    function setClass(type) {
+        if (type == '0') {
+            var ClassList = [];
+        } else if (type == '1') {
+            var ClassList = $api.getStorage('inClass');
+        } else {
+            var ClassList = $api.getStorage('outClass');
+        }
+
+        $api.byId('find-class').options.length=0;
+        $api.byId('find-class').options.add(new Option('全部','0'));
+        for (var key in ClassList) {
+            $api.byId('find-class').options.add(new Option(ClassList[key],key));
+        }
+    }
+
+    /** 改变类别 */
+    function changeType() {
+        var type = parseInt($api.byId('find-type').value);
+        var el = $api.byId('li-class');
+        var has = $api.hasCls(el, 'aui-hide');
+        setClass(type);
+        if (type === 0) {
+            if (!has) {
+                $api.addCls(el, 'aui-hide');
+            }
+        } else {
+            if (has) {
+                $api.removeCls(el, 'aui-hide');
+            }
+        }
+    }
+
+    /** 搜索命令 */
+    function cmdFind() {
+        var type = parseInt($api.byId('find-type').value);
+        var classid = parseInt($api.byId('find-class').value);
+        var starttime = $api.byId('find-time-start').value;
+        var endtime = $api.byId('find-time-end').value;
+        var mark =  $api.byId('find-mark').value;
+
+        var findData = {};
+        findData.jiid = uid;
+        if (type !== 0) {
+            findData.zhifu = type;
+            if (classid !== 0) {
+                findData.acclassid = classid;
+            }
+        }
+        if (starttime) {
+            findData.starttime = starttime;
+        }
+        if (endtime) {
+            findData.endtime = endtime;
+        }
+        if (mark) {
+            findData.acremark = mark;
+        }
+        
+        api.openWin({
+            name: 'find_win',
+            url: './find_win.html',
+            pageParam: findData,
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 100
+        });
+    }
+
+    /** 重置命令 */
+    function cmdReload() {
+        initFindFrom();
+    }
+
+    /** 返回命令 */
+    function cmdReturn() {
+        initFindFrom();
+        goIndex(false);
+    }
+
+    function goIndex(isReload) {
+        if(!isReload) {
+            isReload = false;
+        }
+        api.sendEvent({
+            name: 'indexFrame',
+            extra: {
+                name: 'index_frm',
+                index: '1',
+                reload: isReload
+            }
+        });
+    }
+
 </script>
 </html>
