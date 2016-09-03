@@ -5,6 +5,7 @@
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <link rel="stylesheet" type="text/css" href="../css/calendar.css" />
     <style type="text/css">
         input[type="date"] {
             padding: 0.5rem 0;
@@ -57,7 +58,8 @@
                         起始时间
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="date" id="find-time-start" placeholder="选择起始时间" />
+                        <input type="text"  id="find-time-start" class="calendars" format="yyyy年mm月dd日" start="2000" end="2118" placeholder="选择起始时间" />
+                        <!-- <input type="date" id="find-time-start" placeholder="选择起始时间" /> -->
                     </div>
                 </div>
             </li>
@@ -67,7 +69,8 @@
                         终止时间
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="date" id="find-time-end" placeholder="选择终止时间" />
+                        <input type="text"  id="find-time-end" class="calendars" format="yyyy年mm月dd日" start="2000" end="2118" placeholder="选择终止时间" />
+                        <!-- <input type="date" id="find-time-end" placeholder="选择终止时间" /> -->
                     </div>
                 </div>
             </li>
@@ -100,7 +103,9 @@
 
     </div>
 </body>
+<script type="text/javascript" src="../script/app.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/calendar.js"></script>
 <script type="text/javascript">
     var uid = 0;
     apiready = function(){
@@ -170,8 +175,8 @@
     function cmdFind() {
         var type = parseInt($api.byId('find-type').value);
         var classid = parseInt($api.byId('find-class').value);
-        var starttime = $api.byId('find-time-start').value;
-        var endtime = $api.byId('find-time-end').value;
+        var starttime = $app.strDateFormat($api.byId('find-time-start').value, 'yyyy-mm-dd');
+        var endtime = $app.strDateFormat($api.byId('find-time-end').value, 'yyyy-mm-dd');
         var mark =  $api.byId('find-mark').value;
 
         var findData = {};
