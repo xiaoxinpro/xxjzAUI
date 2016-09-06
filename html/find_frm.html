@@ -61,6 +61,9 @@
                         <input type="text"  id="find-time-start" class="calendars" format="yyyy年mm月dd日" start="2000" end="2118" placeholder="选择起始时间" />
                         <!-- <input type="date" id="find-time-start" placeholder="选择起始时间" /> -->
                     </div>
+                    <div class="aui-list-item-label-icon" onclick="clearValue('find-time-start');">
+                        <i class="aui-iconfont aui-icon-close"></i>
+                    </div>
                 </div>
             </li>
             <li class="aui-list-item">
@@ -71,6 +74,9 @@
                     <div class="aui-list-item-input">
                         <input type="text"  id="find-time-end" class="calendars" format="yyyy年mm月dd日" start="2000" end="2118" placeholder="选择终止时间" />
                         <!-- <input type="date" id="find-time-end" placeholder="选择终止时间" /> -->
+                    </div>
+                    <div class="aui-list-item-label-icon"onclick="clearValue('find-time-end');">
+                        <i class="aui-iconfont aui-icon-close"></i>
                     </div>
                 </div>
             </li>
@@ -83,6 +89,9 @@
                     </div>
                     <div class="aui-list-item-input">
                         <input type="text" id="find-mark" placeholder="输入备注信息" />
+                    </div>
+                    <div class="aui-list-item-label-icon"onclick="clearValue('find-mark');">
+                        <i class="aui-iconfont aui-icon-close"></i>
                     </div>
                 </div>
             </li>
@@ -169,6 +178,11 @@
                 $api.removeCls(el, 'aui-hide');
             }
         }
+    }
+
+    /** 清空指定id的Value属性值 */
+    function clearValue(id) {
+        $api.byId(id).value = '';
     }
 
     /** 搜索命令 */
