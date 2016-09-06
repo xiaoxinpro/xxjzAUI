@@ -157,6 +157,7 @@
     </section>
 
 </body>
+<script type="text/javascript" src="../script/app.js"></script>
 <script type="text/javascript" src="../script/base64.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
@@ -189,12 +190,8 @@
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
         //显示日期
         $api.byId('id-date').innerHTML = ''+api.pageParam.year+'年'+api.pageParam.month+'月'+api.pageParam.day+'日';
-        if (api.pageParam.month > 9) {
-            valDate = ''+api.pageParam.year+'-'+api.pageParam.month+'-'+api.pageParam.day+'';
-        } else {
-            valDate = ''+api.pageParam.year+'-0'+api.pageParam.month+'-'+api.pageParam.day+'';
-        }
-        
+        valDate = ''+api.pageParam.year+'-'+api.pageParam.month+'-'+api.pageParam.day+'';
+        valDate = $app.strDateFormat(valDate,'yyyy-mm-dd');
         // toast.loading({
         //     title:"加载中",
         //     duration:2000
