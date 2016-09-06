@@ -5,6 +5,7 @@
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <link rel="stylesheet" type="text/css" href="../css/calendar.css" />
     <style type="text/css">
         input[type="date"] {
             padding: 0.5rem 0;
@@ -71,7 +72,7 @@
                         时间
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="date" id="add-time" value="2016-08-01" onchange="cheakTime();"/>
+                        <input type="text"  id="add-time" class="calendars" format="yyyy年mm月dd日" start="2000" end="2118" value="2016年9月6日" onchange="cheakTime();" />
                     </div>
                 </div>
             </li>
@@ -88,10 +89,12 @@
     </div>
 
 </body>
+<script type="text/javascript" src="../script/app.js"></script>
 <script type="text/javascript" src="../script/base64.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/aui-tab.js" ></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/calendar.js"></script>
 <script type="text/javascript">
     var toast = new auiToast();
     var now = new Date();
@@ -109,15 +112,15 @@
         var varYear = now.getFullYear();
         var varMonth= now.getMonth() + 1;
         var varDay  = now.getDate();
-        strNow = now.getFullYear() + '-';
+        strNow = now.getFullYear() + '年';
         if (varMonth < 10) {
             strNow += '0';
         }
-        strNow += varMonth + '-';
+        strNow += varMonth + '月';
         if (varDay < 10) {
             strNow += '0';
         }
-        strNow += varDay;
+        strNow += varDay + '日';
         $api.byId('add-time').value = strNow;
         initList();
     }
@@ -218,7 +221,7 @@
     /** 校验输入时间 */
     function cheakTime() {
         var dom = $api.byId('add-time');
-        var cheak = (dom.value.length == 10);
+        var cheak = /(\d+\D\d+\D\d+)/.test(dom.value);
         showCheak(dom, cheak);
         return cheak;
     }
@@ -301,7 +304,7 @@
         var addData = {};
         addData.acmoney   = $api.byId('add-money').value;
         addData.acclassid = $api.byId('add-class').value;
-        addData.actime    = $api.byId('add-time').value;
+        addData.actime    = $app.strDateFormat($api.byId('add-time').value, 'yyyy-mm-dd');
         addData.acremark  = $api.byId('add-mark').value;
         addData.zhifu     = $api.byId('add-type').value;
         //alert(JSON.stringify(addData));
