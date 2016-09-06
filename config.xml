@@ -30,7 +30,7 @@
 
     <preference name="vScrollBarEnabled" value="false"/>
 
-    <preference name="autoLaunch" value="true"/>
+    <preference name="autoLaunch" value="false"/>
 
     <preference name="fullScreen" value="false"/>
 

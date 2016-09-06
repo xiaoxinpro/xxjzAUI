@@ -10,18 +10,7 @@
     </style>
 </head>
 <body>
-<!--     <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px;">
-        <a class="aui-pull-left aui-btn">
-            <span class="aui-iconfont aui-icon-left"></span>返回
-        </a>
-        <div class="aui-title">小歆记账AUI</div>
-        <div class="aui-pull-right">
-            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
-        </div>
-    </header> -->
-<!--     <div id="main">
-        <a onclick="LoginFrame();">登录</a>
-    </div> -->
+
 
 </body>
 <script type="text/javascript" src="./script/api.js"></script>
@@ -64,28 +53,13 @@
                     AutoLogin(user);
                 } else {
                     LoginFrame();
+                    closeLaunch();
                 }
             } else {
                 LoginFrame();
+                closeLaunch();
             }
-        });
-
-        // var body_h = $api.offset($api.dom('body')).h;
-        // var header_h = $api.offset($api.byId('header')).h;
-        // var footer_h = $api.offset($api.byId('footer')).h;
-        // var frame_h = api.winHeight - header_h - footer_h;
-        // api.openFrame({
-        //     name: 'index',
-        //     url: './html/main.html',
-        //     bounces: true,
-        //     rect: {
-        //         x: 0,
-        //         y: header_h,
-        //         w: 'auto',
-        //         h: frame_h
-        //     }
-        // })
-        
+        });        
     };
 
     /** 自动登录 */
@@ -113,6 +87,7 @@
                         LoginFrame();
                     });
                 }
+                closeLaunch();
             });
         }
     }
@@ -187,6 +162,16 @@
     /** 关闭正在活动的窗体 */
     function closeWin(){
         api.closeWin({
+        });
+    }
+
+    /** 关闭启动页面 */
+    function closeLaunch() {
+        api.removeLaunchView({
+            animation: {
+                type: 'suck',
+                duration: 500
+            }
         });
     }
 
