@@ -36,16 +36,18 @@
         </div>
     </header>
     <div id="header-bottom"></div>
-    <div class="aui-content aui-margin-b-15">
+    <div class="aui-text-center" id="header-logo">
+        <img src="../image/login_logo.png" />
+    </div>
+    <div class="aui-content-padded aui-margin-b-15">
         <ul class="aui-list aui-form-list">
-            <!-- <li class="aui-list-header">带有图标的表单</li> -->
             <li class="aui-list-item">
                 <div class="aui-list-item-inner">
                     <div class="aui-list-item-label-icon">
-                        <i class="aui-iconfont aui-icon-mobile"></i>
+                        <i class="aui-iconfont aui-icon-my"></i>
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="text" id="username" placeholder="账号" value="admin">
+                        <input type="text" id="username" placeholder="用户名" value="admin">
                     </div>
                 </div>
             </li>
@@ -55,16 +57,18 @@
                         <i class="aui-iconfont aui-icon-lock"></i>
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="password" id="password" placeholder="密码" value="285285">
-                    </div>
-                    <div class="aui-list-item-label-icon">
-                        <i class="aui-iconfont aui-icon-display"></i>
+                        <input type="password" id="password" placeholder="密码" value="123456">
                     </div>
                 </div>
             </li>
         </ul>
         <p><div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdLogin();">登录</div></p>
         <p><div class="aui-btn aui-btn-block aui-btn-sm" onclick="cmdForget();">忘记密码</div></p>
+    </div>
+    <div class="aui-text-center aui-font-size-14" style="position:fixed; bottom:10px; width:100%;">
+        <a href="#" class="aui-text-info" onclick="cmdRegist();">注册账号</a>
+        <span class="aui-text-info">&nbsp;|&nbsp;</span>
+        <a href="#" class="aui-text-info" onclick="cmdAbout();">关于我们</a>
     </div>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
@@ -78,10 +82,14 @@
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //顶部Logo高度
+        var logoHeight = (api.frameHeight / 6) + 'px';
+        $api.byId('header-logo').style.height = logoHeight;
+        $api.byId('header-logo').firstElementChild.style.height = logoHeight;
         
-        api.removePrefs({
-            key: 'user'
-        });
+        //删除用户资料
+        $api.rmStorage('user');
     }
 
     var toast = new auiToast();
@@ -102,29 +110,21 @@
                         duration:500
                     });
 
+                    //封装用户配置
+                    var user = {
+                        uid: ret['uid'],
+                        username: username,
+                        password: password
+                    };
+
                     //保存用户配置
-                    api.setPrefs({
-                        key: 'user',
-                        value: {
-                            uid: ret['uid'],
-                            username: username,
-                            password: password
-                        }
-                    });
+                    $api.setStorage('user', user);
 
                     //发送登录成功事件
                     api.sendEvent({
                         name: 'xxjzLogin',
-                        extra: {
-                            uid: ret['uid'], 
-                            username: username,
-                            password: password
-                        }
+                        extra: user
                     });
-                    // api.closeFrame({name: 'login_frm'});
-                    // api.alert({
-                    //     msg: ret['uname']+'登录成功!'
-                    // });
                 } else {
                     api.alert({
                         title: '登录失败',
@@ -132,14 +132,22 @@
                     });
                 }
             });
-            // setTimeout(function(){
-            //     toast.hide();
-            // }, 3000)
         });
     }
 
     function cmdForget() {
         //api.alert({msg:api.winName});
+        api.alert({msg:'弹出找回密码窗口'});
+    }
+
+    function cmdRegist() {
+        // body...
+        api.alert({msg:'弹出注册窗口'});
+    }
+
+    function cmdAbout() {
+        // body...
+        api.alert({msg:'弹出关于窗口'});
     }
 
     function sendPostLogin(username, password, callback) {
