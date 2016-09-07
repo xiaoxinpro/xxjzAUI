@@ -43,23 +43,14 @@
         });
 
         //主流程
-        api.getPrefs({
-            key: 'user'
-        }, function(ret, err){
-            if( ret.value ){
-                var user = JSON.parse(ret['value']);
-                if (user.uid > 0) {
-                    //openWin('index_win');
-                    AutoLogin(user);
-                } else {
-                    LoginFrame();
-                    closeLaunch();
-                }
-            } else {
-                LoginFrame();
-                closeLaunch();
-            }
-        });        
+        var user = $api.getStorage('user');
+        if (user && (user.uid > 0)) {
+            //openWin('index_win');
+            AutoLogin(user);
+        } else {
+            LoginFrame();
+            closeLaunch();
+        }       
     };
 
     /** 自动登录 */

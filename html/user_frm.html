@@ -41,17 +41,11 @@
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
-        api.getPrefs({
-            key: 'user'
-        }, function(ret, err){
-            if( ret ){
-                user = JSON.parse(ret['value']);
-                uid = user.uid;
-                getUserInfo();
-            }else{
-                 alert( JSON.stringify( err ) );
-            }
-        });
+
+        //获取用户信息
+        user = $api.getStorage('user');
+        uid = user.uid;
+        getUserInfo();
     }
 
     function getUserInfo() {

@@ -200,29 +200,21 @@
 
     /** 初始化页面数据 */
     function initData(callback) {
-        api.getPrefs({
-            key: 'user'
-        }, function(ret, err){
-            if( ret ){
-                uid = JSON.parse(ret.value).uid;
-                getData(function(data){
-                    var MonthOverMoney = data['MonthInMoney'] - data['MonthOutMoney'];
-                    $api.byId('id-month-in-money').innerHTML = data['MonthInMoney'];
-                    $api.byId('id-month-out-money').innerHTML = data['MonthOutMoney'];
-                    $api.byId('id-month-over-money').innerHTML = MonthOverMoney.toFixed(2);
-                    $api.byId('id-month-in-money-1').innerHTML = data['MonthInMoney'];
-                    $api.byId('id-month-out-money-1').innerHTML = data['MonthOutMoney'];
-                    $api.byId('id-day-in-money').innerHTML = data['TodayInMoney'];
-                    $api.byId('id-day-out-money').innerHTML = data['TodayOutMoney'];
-                    $api.byId('id-year-in-money').innerHTML = data['YearInMoney'];
-                    $api.byId('id-year-out-money').innerHTML = data['YearOutMoney'];
-                    $api.byId('id-all-in-money').innerHTML = data['SumInMoney'];
-                    $api.byId('id-all-out-money').innerHTML = data['SumOutMoney'];
-                    callback();
-                });
-            }else{
-                 alert( JSON.stringify( err ) );
-            }
+        uid = $api.getStorage('user').uid;
+        getData(function(data){
+            var MonthOverMoney = data['MonthInMoney'] - data['MonthOutMoney'];
+            $api.byId('id-month-in-money').innerHTML = data['MonthInMoney'];
+            $api.byId('id-month-out-money').innerHTML = data['MonthOutMoney'];
+            $api.byId('id-month-over-money').innerHTML = MonthOverMoney.toFixed(2);
+            $api.byId('id-month-in-money-1').innerHTML = data['MonthInMoney'];
+            $api.byId('id-month-out-money-1').innerHTML = data['MonthOutMoney'];
+            $api.byId('id-day-in-money').innerHTML = data['TodayInMoney'];
+            $api.byId('id-day-out-money').innerHTML = data['TodayOutMoney'];
+            $api.byId('id-year-in-money').innerHTML = data['YearInMoney'];
+            $api.byId('id-year-out-money').innerHTML = data['YearOutMoney'];
+            $api.byId('id-all-in-money').innerHTML = data['SumInMoney'];
+            $api.byId('id-all-out-money').innerHTML = data['SumOutMoney'];
+            callback();
         });
         var now = new Date();
         var varYear = now.getFullYear();
