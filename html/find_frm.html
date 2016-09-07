@@ -20,7 +20,7 @@
         </div>
     </header>
     <div id="header-bottom"></div>
-    <div class="aui-content aui-margin-b-15">
+    <div class="aui-content aui-margin-b-15 aui-padded-t-15">
         <ul class="aui-list aui-form-list">
 
             <!-- 类别 -->
@@ -127,11 +127,7 @@
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
 
         //初始化用户数据
-        api.getPrefs({
-            key: 'user'
-        }, function(ret, err){
-            uid = JSON.parse(ret.value).uid;
-        });
+        uid = $api.getStorage('user').uid;
 
         //表单初始化
         initFindFrom();
