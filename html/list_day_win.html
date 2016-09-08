@@ -192,15 +192,13 @@
         $api.byId('id-date').innerHTML = ''+api.pageParam.year+'年'+api.pageParam.month+'月'+api.pageParam.day+'日';
         valDate = ''+api.pageParam.year+'-'+api.pageParam.month+'-'+api.pageParam.day+'';
         valDate = $app.strDateFormat(valDate,'yyyy-mm-dd');
-        // toast.loading({
-        //     title:"加载中",
-        //     duration:2000
-        // },function(ret){
-            initData(function(){
-                toast.hide();
-            });
-        // });
 
+        //初始化数据
+        initData(function(){
+            toast.hide();
+        });
+
+        //数据刷新监听
         api.addEventListener({
             name: 'indexInitData'
         }, function(ret, err){
