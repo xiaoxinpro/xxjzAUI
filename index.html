@@ -42,6 +42,13 @@
             //api.closeWin({name: 'index_win'});
         });
 
+        //应用从后台回到前台事件
+        api.addEventListener({
+            name:'resume'
+        }, function(ret, err){        
+            api.rebootApp();
+        });
+
         //主流程
         var user = $api.getStorage('user');
         if (user && (user.uid > 0)) {
