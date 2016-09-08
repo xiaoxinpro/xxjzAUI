@@ -13,23 +13,10 @@
             margin-top: 15px;
             margin-bottom: 15px;
         }
-        #default{ 
-            display: none; 
-            position: absolute; 
-            top: 0%; 
-            left: 0%; 
-            width: 100%; 
-            height: 100%; 
-            background-color: black; 
-            z-index:1001; 
-            -moz-opacity: 0.7; 
-            opacity:.70; 
-            filter: alpha(opacity=70);
-        }
     </style>
 </head>
 <body>
-    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top: 20px; position: fixed;">
         <div class="aui-title">登录</div>
         <div class="aui-pull-right">
             <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
@@ -63,12 +50,12 @@
             </li>
         </ul>
         <p><div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdLogin();">登录</div></p>
-        <p><div class="aui-btn aui-btn-block aui-btn-sm" onclick="cmdForget();">忘记密码</div></p>
+        <p><div class="aui-btn aui-btn-block aui-btn-sm" onclick="openWin('forget_win');">忘记密码</div></p>
     </div>
     <div class="aui-text-center aui-font-size-14" style="position:fixed; bottom:10px; width:100%;">
-        <a href="#" class="aui-text-info" onclick="cmdRegist();">注册账号</a>
+        <a href="#" class="aui-text-info" onclick="openWin('regist_win');">注册账号</a>
         <span class="aui-text-info">&nbsp;|&nbsp;</span>
-        <a href="#" class="aui-text-info" onclick="cmdAbout();">关于我们</a>
+        <a href="#" class="aui-text-info" onclick="openWin('about_win');">关于我们</a>
     </div>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
@@ -92,8 +79,10 @@
         $api.rmStorage('user');
     }
 
+    /** 定义提示框 */
     var toast = new auiToast();
 
+    /** 登录 */
     function cmdLogin() {
         var username = document.getElementById('username').value;
         var password = document.getElementById('password').value;
@@ -135,21 +124,7 @@
         });
     }
 
-    function cmdForget() {
-        //api.alert({msg:api.winName});
-        api.alert({msg:'弹出找回密码窗口'});
-    }
-
-    function cmdRegist() {
-        // body...
-        api.alert({msg:'弹出注册窗口'});
-    }
-
-    function cmdAbout() {
-        // body...
-        api.alert({msg:'弹出关于窗口'});
-    }
-
+    /** 发送登录命令 */
     function sendPostLogin(username, password, callback) {
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Login/login_api',
@@ -172,6 +147,21 @@
                 });
                 // api.alert({msg:JSON.stringify(err)});
             }
+        });
+    }
+
+    /** 打开指定窗体 */
+    function openWin(name){
+        api.openWin({
+            name: ''+name+'',
+            url: ''+name+'.html',
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_bottom'
+            },
+            delay: 100
         });
     }
 
