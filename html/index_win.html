@@ -79,6 +79,14 @@
             }
         });
 
+        //返回按键监听(安卓)
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+            openFrame('index_frm');
+            tab.setActive(1);
+        });
+
         getUsualData(function(){});
     };
 
