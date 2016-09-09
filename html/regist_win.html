@@ -35,7 +35,7 @@
                         <i class="aui-iconfont aui-icon-my"></i>&nbsp;账号
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="text" id="regist-username" placeholder="用户名" />
+                        <input type="text" id="regist-username" placeholder="用户名" value="admin" />
                     </div>
                 </div>
             </li>
@@ -46,7 +46,7 @@
                         <i class="aui-iconfont aui-icon-lock"></i>&nbsp;密码
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="password" id="regist-password" placeholder="密码" />
+                        <input type="password" id="regist-password" placeholder="密码" value="aaaaaa" />
                     </div>
                 </div>
             </li>
@@ -57,7 +57,7 @@
                         <i class="aui-iconfont aui-icon-lock"></i>&nbsp;确认
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="password" id="regist-password-2" placeholder="再次输入密码" />
+                        <input type="password" id="regist-password-2" placeholder="再次输入密码" value="aaaaaa" />
                     </div>
                 </div>
             </li>
@@ -68,7 +68,7 @@
                         <i class="aui-iconfont aui-icon-mail"></i>&nbsp;邮箱
                     </div>
                     <div class="aui-list-item-input">
-                        <input type="email" id="regist-mail" placeholder="用于找回密码" />
+                        <input type="email" id="regist-mail" placeholder="用于找回密码" value="pro@xxgzs.org" />
                     </div>
                 </div>
             </li>
@@ -77,9 +77,9 @@
         <p><div class="aui-btn aui-btn-block aui-btn-sm" onclick="cmdReturn();">返回登录</div></p>
     </div>
     <div class="aui-text-center aui-font-size-14" style="position:fixed; bottom:10px; width:100%;">
-        <a href="#" class="aui-text-info" onclick="cmdForget();">找回密码</a>
+        <a href="#" class="aui-text-info" onclick="openWin('forget_win');">找回密码</a>
         <span class="aui-text-info">&nbsp;|&nbsp;</span>
-        <a href="#" class="aui-text-info" onclick="cmdAbout();">关于我们</a>
+        <a href="#" class="aui-text-info" onclick="openWin('about_win');">关于我们</a>
     </div>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
@@ -97,35 +97,30 @@
         
     }
 
-    function sendPostLogin(username, password, callback) {
-        api.ajax({
-            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Login/login_api',
-            method: 'post',
-            data: {
-                values: { 
-                    username: username,
-                    password: password,
-                    submit: 'xxjzAUI'
-                }
-            }
-        },function(ret, err){
-            if (ret) {
-                callback(ret);
-                // api.alert({msg:JSON.stringify(ret['uname'])});
-            } else {
-                callback({
-                    uid: 0,
-                    uname: err['msg']+'（请联系管理员）'
-                });
-                // api.alert({msg:JSON.stringify(err)});
-            }
-        });
-    }
-
     /** 注册命令 */
     function cmdRegist() {
-        var ret = cheakForm();
-        api.alert({msg: ret.msg});
+        var regist = cheakForm();
+        if (regist.cheak) {
+            toast.loading({
+                title:"注册中",
+                duration:200
+            },function(ret){
+                sendPostRegist(regist.msg, function(ret){
+                    toast.hide();
+                    if (ret.uid > 0) {
+                        toast.success({ title: '注册成功', duration:800 });
+                        setTimeout(function(){
+                            cmdReturn();
+                        }, 500);
+                    } else {
+                        api.alert({ title: '注册失败', msg: ret.msg });
+                    }
+                });
+            });
+        } else {
+            api.alert( { msg: regist.msg } );
+            $api.byId(regist.id).focus;
+        }
     }
 
     /** 校验表单 */
@@ -136,6 +131,7 @@
         var password2= $api.byId('regist-password-2').value;
         var email    = $api.byId('regist-mail').value;
         //验证用户名
+        ret.id = 'regist-username';
         if (/\s/.test(username)) {
             ret.msg = '账号不能包含空格。';
             return ret;
@@ -147,8 +143,10 @@
             return ret;
         }
         //验证密码
+        ret.id = 'regist-password';
         if (password !== password2) {
             ret.msg = '两次输入的密码不相同...';
+            return ret;
         } else if (/\s/.test(password)) {
             ret.msg = '密码不能包含空格。';
             return ret;
@@ -157,27 +155,50 @@
             return ret;
         }
         //验证邮箱
-        if (!(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email))) {
+        ret.id = 'regist-mail';
+        if (!(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,5})$/.test(email))) {
             ret.msg = '邮箱格式有误，请重新输入。';
             return ret;
         }
+        //验证通过
         ret.cheak = true;
-        ret.msg = '提交格式正确!';
+        ret.msg = {
+            regist_username: username,
+            regist_password: password,
+            regist_email: email,
+            regist_submit: 'xxjzAUI'
+        };
         return ret;
     }
 
-    function cmdForget() {
-        openWin('forget_win');
+    /** 发送Post数据 */
+    function sendPostRegist(postData, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Login/regist',
+            method: 'post',
+            data: {
+                values: postData
+            }
+        },function(ret, err){
+            if (ret) {
+                callback(ret);
+            } else {
+                callback({
+                    uid: 0,
+                    msg: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
     }
 
-    function cmdAbout() {
-        api.alert({msg:'弹出关于窗口'});
-    }
-
+    /** 返回命令 */
     function cmdReturn() {
-        closeWin();
+        api.closeToWin({
+            name: 'root'
+        });
     }
 
+    /** 打开窗口 */
     function openWin(name){
         api.openWin({
             name: ''+name+'',
@@ -192,6 +213,7 @@
         });
     }
 
+    /** 关闭窗口 */
     function closeWin(){
         api.closeWin({
         });
