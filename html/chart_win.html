@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+        header {
+            margin-bottom: 15px;
+        }
+        .aui-btn {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top: 20px; position: fixed;" >
+        <div class="aui-pull-left">
+            <i class="aui-iconfont aui-icon-left" onclick="closeWin();"></i>
+        </div>
+        <div class="aui-title" id="title">统计</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+
+    <div id="chart-main" style="height:350px"></div>
+    <hr>
+    <div id="chart-InClass" style="height:320px"></div>
+    <hr>
+    <div id="chart-OutClass" style="height:320px"></div>
+    <hr>
+
+    <div class="aui-content-padded aui-margin-b-15">
+        <p><div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="closeWin();">返回</div></p>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/echarts.js" ></script>
+<script type="text/javascript">
+    var type = '';
+    var year = 1;
+    var month = 1;
+    var chartData = {};
+    var toast = new auiToast();
+    var chartMain = echarts.init(document.getElementById('chart-main'));
+    var chartInClass = echarts.init(document.getElementById('chart-InClass'));
+    var chartOutClass = echarts.init(document.getElementById('chart-OutClass'));
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //初始化数据
+        initData();
+
+    }
+
+    /** 初始化数据 */
+    function initData() {
+        if (api.pageParam.month) {
+            type = 'month';
+            year = api.pageParam.year;
+            month = api.pageParam.month;
+            $api.byId('title').innerHTML = year + '年' + month + '月份统计';
+        } else if (api.pageParam.year) {
+            type = 'year';
+            year = api.pageParam.year;
+            $api.byId('title').innerHTML = year + '年统计';
+        } else {
+            $api.byId('title').innerHTML = 'APP出错';
+            api.alert({ title: '应用出错', msg: '页面跳转错误，请重新安装APP。' });
+            return;
+        }
+        //获取图表数据
+        getChartData({type:type, date:Date.parse(new Date(year,month,1))}, function(ret){
+            chartData.InMoney = objToArr(ret.InMoney);
+            chartData.OutMoney = objToArr(ret.OutMoney);
+            chartData.OverMoney = objToArr(ret.SurplusMoney);
+            chartData.InClassMoney = objToArr(ret.InClassMoney);
+            alert(JSON.stringify(chartData));
+        });
+    }
+
+    /** 获取图标数据 */
+    function getChartData(data, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/chart',
+            method: 'get',
+            data: {
+                values: data
+            }
+        }, function(ret, err) {
+            if (ret) {
+                alert(JSON.stringify(ret));
+                callback(ret);
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    }
+
+    /** 填充主图表 */
+    function initChartMain() {
+        chartMain.setOption({
+            title: {
+                text: '{$y}年收入与支出金额汇总',
+                top: 'top',
+                x: 'center'
+            },
+            color: ['#90ee7e','#ff0066','#f7a35c','7cb5ec'],  //蓝色：3398DB 红色：c23531 青色：61a0a8 橙色：d48265 绿色：91c7ae
+            tooltip : {
+                trigger: 'axis',
+                extraCssText: 'text-align: left;',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {
+                data:['收入','支出','月剩余','年剩余'],
+                selected:{
+                    '收入' : true,
+                    '支出' : true,
+                    '月剩余' : false,
+                    '年剩余' : false
+                },
+                top: 'bottom',
+                x: 'center'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '12%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+            },
+            yAxis: {
+                type : 'value'
+            },
+            barGap: '5%',
+            series: [{
+                name: '收入',
+                type: 'bar',
+                //data: {$JsonInMoney}
+            },{
+                name: '支出',
+                type: 'bar',
+                //data: {$JsonOutMoney}
+            },{
+                name: '月剩余',
+                type: 'line',
+                smooth: true,
+                //data: {$JsonSurplusMoney}
+            },{
+                name: '年剩余',
+                type: 'line',
+                smooth: true,
+                // data: {$JsonSurplusSumMoney}
+            }]
+        });
+    }
+
+    /** 对象转数组 */
+    function objToArr(obj) {
+        var arr = [];
+        for(var key in obj) {
+            if (typeof(obj[key]) === 'object') {
+                arr[key] = objToArr(obj[key]);
+            } else {
+                arr.push(obj[key]);
+            }
+        }
+        return arr;
+    }
+    
+    /** 关闭窗体 */
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+
+</script>
+</html>
