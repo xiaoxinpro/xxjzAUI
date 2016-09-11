@@ -52,7 +52,7 @@
                     <p class="aui-font-size-12 aui-bg-info">&nbsp;￥剩余</p>
                 </div>
                 <div class="aui-col-xs-4">
-                    <div class="aui-pull-right aui-padded-t-10 aui-padded-r-5">
+                    <div class="aui-pull-right aui-padded-t-10 aui-padded-r-5" onclick="goChartWin();">
                         <i class="fa fa-bar-chart" style="font-size: 1.25rem;"></i>
                     </div>
                 </div>
@@ -291,6 +291,25 @@
                 name: 'add_frm',
                 index: '2'
             }
+        });
+    }
+
+    /** 跳转到图表页面 */
+    function goChartWin() {
+        api.openWin({
+            name: 'chart_win',
+            url: './chart_win.html',
+            pageParam: {
+                type: 'year',
+                year: api.pageParam.year
+            },
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 200
         });
     }
 
