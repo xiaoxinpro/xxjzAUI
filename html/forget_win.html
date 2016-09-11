@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+		header {
+            margin-bottom: 15px;
+        }
+        .aui-btn {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top: 20px; position: fixed;">
+        <div class="aui-pull-left">
+            <i class="aui-iconfont aui-icon-left" onclick="closeWin();"></i>
+        </div>
+        <div class="aui-title">找回密码</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <div class="aui-text-center" id="header-logo"></div>
+    <div class="aui-content-padded aui-margin-b-15 aui-padded-t-15">
+        <ul class="aui-list aui-form-list">
+            <!-- 邮箱 -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        <i class="aui-iconfont aui-icon-mail"></i>&nbsp;邮箱
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="email" id="forget-email" placeholder="输入注册时填写的邮箱" value="xx-gzs@qq.com" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <p><div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdForget();">发送验证邮件</div></p>
+        <p><div class="aui-btn aui-btn-block aui-btn-sm" onclick="cmdReturn();">返回登录</div></p>
+    </div>
+    <div class="aui-text-center aui-font-size-14" style="position:fixed; bottom:10px; width:100%;">
+        <a href="#" class="aui-text-info" onclick="openWin('regist_win');">注册账号</a>
+        <span class="aui-text-info">&nbsp;|&nbsp;</span>
+        <a href="#" class="aui-text-info" onclick="openWin('about_win');">关于我们</a>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var toast = new auiToast();
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //顶部Logo高度
+        var logoHeight = '2px';//(api.frameHeight / 10) + 'px';
+        $api.byId('header-logo').style.height = logoHeight;
+
+    }
+
+    /** 找回密码命令 */
+    function cmdForget() {
+        var forget = cheakEmail();
+        if (forget.cheak) {
+            toast.loading({
+                title:"校验中",
+                duration:200
+            },function(ret){
+                sendPostForget(forget.msg, function(ret){
+                    toast.hide();
+                    if (ret.uid) {
+                        api.alert({
+                            title: '发送成功',
+                            msg: '验证邮件已发到您的邮箱，请查收！'
+                        }, function(ret, err) {
+                            cmdReturn();
+                        });
+                    } else {
+                        api.alert({ title: '发送失败', msg: ret.msg});
+                    }
+                });
+            });
+        } else {
+            api.alert( { msg: forget.msg } );
+            $api.byId(forget.id).focus;
+        }
+        
+    }
+
+    /** 验证邮箱 */
+    function cheakEmail() {
+        var ret = {cheak: false};
+        var email = $api.byId('forget-email').value;
+        //验证邮箱
+        ret.id = 'forget-mail';
+        if (!(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,5})$/.test(email))) {
+            ret.msg = '邮箱格式有误，请重新输入。';
+            return ret;
+        }
+        //验证通过
+        ret.cheak = true;
+        ret.msg = {
+            forget_email: email,
+            forget_submit: 'xxjzAUI'
+        };
+        return ret;
+    }
+
+    /** 发送Post数据 */
+    function sendPostForget(postData, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Login/index',
+            method: 'post',
+            data: {
+                values: postData
+            }
+        },function(ret, err){
+            if (ret) {
+                callback(ret);
+            } else {
+                alert( JSON.stringify( err ) );
+                callback({
+                    uid: 0,
+                    msg: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
+    }
+
+    /** 返回命令 */
+    function cmdReturn() {
+        api.closeToWin({
+            name: 'root'
+        });
+    }
+
+    /** 打开窗体 */
+    function openWin(name){
+        api.openWin({
+            name: ''+name+'',
+            url: ''+name+'.html',
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_bottom'
+            },
+            delay: 100
+        });
+    }
+
+    /** 关闭窗体 */
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+
+</script>
+</html>
