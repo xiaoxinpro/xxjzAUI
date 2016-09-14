@@ -45,6 +45,7 @@
     var type = '';
     var year = 1;
     var month = 1;
+    var title = '';
     var chartData = {};
     var toast = new auiToast();
     var chartMain = echarts.init(document.getElementById('chart-main'));
@@ -59,6 +60,20 @@
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
 
+        //读取页面配置信息
+        if (api.pageParam.month) {
+            type = 'month';
+            year = api.pageParam.year;
+            month = api.pageParam.month;
+        } else if (api.pageParam.year) {
+            type = 'year';
+            year = api.pageParam.year;
+        } else {
+            $api.byId('title').innerHTML = 'APP出错';
+            api.alert({ title: '应用出错', msg: '页面跳转错误，请重新安装APP。' });
+            return;
+        }
+
         //初始化数据
         initData();
 
@@ -66,27 +81,34 @@
 
     /** 初始化数据 */
     function initData() {
-        if (api.pageParam.month) {
-            type = 'month';
-            year = api.pageParam.year;
-            month = api.pageParam.month;
-            $api.byId('title').innerHTML = year + '年' + month + '月份统计';
-        } else if (api.pageParam.year) {
-            type = 'year';
-            year = api.pageParam.year;
+        //设置标题
+        if (type === 'month') {
+            title = year + '年' + month + '月';
+            $api.byId('title').innerHTML = '份统计';
+        } else if (type === 'year') {
+            title = year + '年';
             $api.byId('title').innerHTML = year + '年统计';
         } else {
             $api.byId('title').innerHTML = 'APP出错';
             api.alert({ title: '应用出错', msg: '页面跳转错误，请重新安装APP。' });
             return;
         }
+
         //获取图表数据
-        getChartData({type:type, date:Date.parse(new Date(year,month,1))}, function(ret){
+        getChartData({type:type, date:(Date.parse(new Date(year,month,1))/1000)}, function(ret){
             chartData.InMoney = objToArr(ret.InMoney);
             chartData.OutMoney = objToArr(ret.OutMoney);
             chartData.OverMoney = objToArr(ret.SurplusMoney);
             chartData.InClassMoney = objToArr(ret.InClassMoney);
-            alert(JSON.stringify(chartData));
+            chartData.OutClassMoney = objToArr(ret.OutClassMoney);
+            chartData.InSumMoney = ret.InSumMoney;
+            chartData.OutSumMoney = ret.OutSumMoney;
+            chartData.InSumClassMoney = objToKeyArr(ret.InSumClassMoney);
+            chartData.OutSumClassMoney = objToKeyArr(ret.OutSumClassMoney);
+            chartData.OverSumMoney = objToArr(ret.SurplusSumMoney);
+            initChartMain();
+            initChartInClass();
+            initChartOutClass();
         });
     }
 
@@ -100,7 +122,7 @@
             }
         }, function(ret, err) {
             if (ret) {
-                alert(JSON.stringify(ret));
+                // alert(JSON.stringify(ret));
                 callback(ret);
             } else {
                 alert(JSON.stringify(err));
@@ -112,7 +134,7 @@
     function initChartMain() {
         chartMain.setOption({
             title: {
-                text: '{$y}年收入与支出金额汇总',
+                text: title + '收入与支出金额汇总',
                 top: 'top',
                 x: 'center'
             },
@@ -152,22 +174,108 @@
             series: [{
                 name: '收入',
                 type: 'bar',
-                //data: {$JsonInMoney}
+                data: chartData.InMoney
             },{
                 name: '支出',
                 type: 'bar',
-                //data: {$JsonOutMoney}
+                data: chartData.OutMoney
             },{
                 name: '月剩余',
                 type: 'line',
                 smooth: true,
-                //data: {$JsonSurplusMoney}
+                data: chartData.OverMoney
             },{
                 name: '年剩余',
                 type: 'line',
                 smooth: true,
-                // data: {$JsonSurplusSumMoney}
+                data: chartData.OverSumMoney
             }]
+        });
+    }
+
+    /** 填充收入分类饼图 */
+    function initChartInClass() {
+        chartInClass.setOption({
+            title : {
+                text: title + '收入分类汇总',
+                subtext: '总收入'+ chartData.InSumMoney +'元',
+                x:'center'
+            },
+            color: ["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+        "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+            tooltip : {
+                trigger: 'item',
+                formatter: "{b} : ({d}%)<br/>{c} 元"
+            },
+            series : [
+                {
+                    name: '收入分类',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data: chartData.InSumClassMoney,
+                    labelLine : {
+                        normal: {
+                            smooth: true
+                        }
+                    },
+                    itemStyle: {
+                        normal :{
+                            borderColor: "#FFF",
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            borderWidth: 0,
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        });
+    }
+
+    /** 填充支出分类饼图 */
+    function initChartOutClass() {
+        chartOutClass.setOption({
+            title : {
+                text: title + '支出分类汇总',
+                subtext: '总支出'+ chartData.OutSumMoney +'元',
+                x:'center'
+            },
+            color: ["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+        "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+            tooltip : {
+                trigger: 'item',
+                formatter: "{b} : ({d}%)<br/>{c} 元"
+            },
+            series : [
+                {
+                    name: '支出分类',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data: chartData.OutSumClassMoney,
+                    labelLine : {
+                        normal: {
+                            smooth: true
+                        }
+                    },
+                    itemStyle: {
+                        normal :{
+                            borderColor: "#FFF",
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            borderWidth: 0,
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
         });
     }
 
@@ -179,6 +287,22 @@
                 arr[key] = objToArr(obj[key]);
             } else {
                 arr.push(obj[key]);
+            }
+        }
+        return arr;
+    }
+
+    /** 对象转带键值数组 */
+    function objToKeyArr(obj) {
+        var arr = [];
+        for(var key in obj) {
+            if (typeof(obj[key]) === 'object') {
+                arr[key] = objToKeyArr(obj[key]);
+            } else {
+                arr.push({
+                    name: key,
+                    value: obj[key]
+                });
             }
         }
         return arr;
