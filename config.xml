@@ -30,13 +30,13 @@
 
     <preference name="vScrollBarEnabled" value="false"/>
 
-    <preference name="autoLaunch" value="false"/>
+    <preference name="autoLaunch" value="true"/>
 
     <preference name="fullScreen" value="false"/>
 
     <preference name="autoUpdate" value="true" />
 
-    <preference name="smartUpdate" value="false" />
+    <preference name="smartUpdate" value="true" />
 
     <preference name="debug" value="true"/>
 
