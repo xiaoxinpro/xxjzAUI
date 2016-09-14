@@ -1,7 +1,7 @@
 /*
  * 名称: 小歆记账APICloud JavaScript Library
  * 作者: Chishin
- * 网址: http://jz.xxgzs.org/
+ * 网址: http://jz.xxgzs.org
  * 时间: 2016年9月3日
  */
 (function(window){
