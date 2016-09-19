@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+    <style type="text/css">
+        .aui-bg-info {
+            margin-top:0px; 
+            color:#fff; /*#283593*/
+        }
+
+        div.aui-bg-info {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .aui-list .aui-list-header {
+            background-color: #eeeeee;
+            color: #616161;
+        }
+
+        .aui-list:before,
+        .aui-list:after {
+            background-color: #eeeeee;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-pull-left aui-padded-l-0" >
+            <a class=" aui-btn aui-iconfont aui-icon-left" tapmode onclick="closeWin();"></a>
+        </div>
+        <div class="aui-title">历年账单</div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <section class="aui-content aui-refresh-content">
+    <div class="aui-card-list">
+        <div class="aui-bg-info">
+            <div class="aui-margin-l-10">
+                <h1 class="aui-bg-info" id="id-sum-over-money">0.00</h1>
+                <p class="aui-font-size-12 aui-bg-info">&nbsp;￥剩余</p>
+            </div>
+        </div>
+        <div class="aui-bg-info">
+            <div class="aui-row aui-margin-l-15">
+                <div class="aui-col-xs-6">
+                    <h3 class="aui-bg-info" id="id-sum-out-money">0.00</h3>
+                    <p class="aui-font-size-12 aui-bg-info">￥支出</p>
+                </div>
+                <div class="aui-col-xs-6">
+                    <h3 class="aui-bg-info" id="id-sum-in-money">0.00</h3>
+                    <p class="aui-font-size-12 aui-bg-info">￥收入</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="aui-card-list-content">
+            <div class="aui-content">
+                <ul class="aui-list aui-media-list" id="id-list-ul"> </ul>
+            </div>
+        </div>
+    </div>
+    </section>
+</body>
+<script type="text/javascript" src="../script/base64.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/countUp.js"></script>
+<script type="text/javascript">
+    var uid = 0;
+    var sumInMoney = 0;
+    var sumOutMoney = 0;
+    var numAnimOptions = {
+      useEasing : true, 
+      useGrouping : true, 
+      separator : ' ', 
+      decimal : '.', 
+      prefix : '', 
+      suffix : '' 
+    };
+    var toast = new auiToast();
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = '1px';
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        initData(function(){
+            toast.hide();
+        });
+
+        api.addEventListener({
+            name: 'indexInitData'
+        }, function(ret, err){
+            if( ret ){
+                //alert( JSON.stringify( ret ) );
+                initData(function(){});
+            }else{
+                alert( JSON.stringify( err ) );
+            }
+        });
+
+    };
+
+    /** 下拉刷新 */
+    var pullRefresh = new auiPullToRefresh({
+        container: document.querySelector('.aui-refresh-content'),
+        triggerDistance: 100
+    },function(ret){
+        if(ret.status=="success"){
+            initData(function(){
+                pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+            });
+        }
+    });
+
+    /** 初始化页面数据 */
+    function initData(callback) {
+        //显示加载动画
+        toast.loading({
+            title:"加载中",
+            duration:2000
+        });
+
+        //清空List列表
+        $api.byId('id-list-ul').innerHTML = ''; 
+
+        setTimeout(function(){
+            //获取数据并显示
+            showListData(0, function(ret){
+                //隐藏加载框
+                toast.hide();
+
+                //回调显示数据完成
+                callback();
+            });
+        }, 200);
+    }
+
+    /** 显示页面数据 */
+    function showListData(p, callback) {
+        //整理Api参数
+        var jsonData = {};
+        jsonData.type = 'get_all_year';
+        jsonData.data = BASE64.encoder(JSON.stringify({
+            uid: uid
+        }));
+
+        //获取数据并处理
+        getData(jsonData, function(ret){
+            // alert( JSON.stringify( ret ) );
+            var ListUl = $api.byId('id-list-ul');
+            if (!ret) {
+                callback(false);
+                ListUl.innerHTML = ''+
+                    '<div class="aui-info aui-margin-t-15 aui-padded-l-10 aui-padded-r-10 aui-margin-b-10" onclick="goAddFrame();">'+
+                        '<div class="aui-info-item aui-font-size-14">'+
+                            '您还有记过账呢。'+
+                        '</div>'+
+                        '<div class="aui-info-item aui-font-size-16 aui-text-warning">'+
+                            '记一笔&nbsp;<i class="aui-iconfont aui-icon-right"></i> '+
+                        '</div>'+
+                    '</div>';
+                return;
+            }
+            
+            var ListInMoney = ret.InMoney;
+            var ListOutMoney = ret.OutMoney;
+            var ListOverMoney = ret.SurplusMoney;
+
+            var html = '';
+            for (var i = ret.YearMin; i <= ret.YearMax; i++) {
+                html = '<li class="aui-list-item aui-list-item-middle">'+
+                    '<div class="aui-media-list-item-inner" onclick="goYearList('+i+');">'+
+                        // '<div class="aui-list-item-media" style="width: 3rem;">'+
+                        //     '<img src="../image/icon_in.png" class="aui-img-round aui-list-img-sm">'+
+                        // '</div>'+
+                        '<div class="aui-list-item-inner aui-list-item-arrow">'+
+                            '<div class="aui-list-item-text">'+
+                                '<div class="aui-list-item-title">'+
+                                    '<p class="aui-font-size-18">'+i+'年</p>'+
+                                    '<p class="aui-font-size-12">剩余：'+ListOverMoney[i].toFixed(2)+'</p>'+
+                                '</div>'+
+                                '<div class="aui-list-item-right">'+
+                                    '<p class="aui-font-size-14 aui-text-right"><i class="fa fa-plus-square-o"></i>&nbsp;'+ListInMoney[i].toFixed(2)+'</p>'+
+                                    '<p class="aui-font-size-14 aui-text-right"><i class="fa fa-minus-square-o"></i>&nbsp;'+ListOutMoney[i].toFixed(2)+'</p>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>'+
+                '</li>';
+                ListUl.insertAdjacentHTML('beforeEnd', html);
+            }
+
+            callback(ret);
+
+            //全局变量初始化
+            sumOutMoney = ret.OutSumMoney;
+            sumInMoney = ret.InSumMoney;
+            $api.byId('id-sum-in-money').innerHTML = '' + sumInMoney;
+            $api.byId('id-sum-out-money').innerHTML = '' + sumOutMoney;
+
+            //剩余金额动画(从0到剩余金额,保留2位小数,0.8秒动画)
+            var overMoney = sumInMoney - sumOutMoney;
+            var numAnim = new CountUp("id-sum-over-money", 0, overMoney, 2, 0.8, numAnimOptions);
+            numAnim.start();
+        });
+    }
+
+    /** 获取主页数据 */
+    function getData(jsonData, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
+            method: 'get',
+            data: {
+                values: jsonData
+            }
+        },function(ret, err){
+            if (ret) {
+                // alert( JSON.stringify( ret ) );
+                if (ret['uid'] > 0) {
+                    uid = ret['uid'];
+                    callback(ret['data']);
+                } else {
+                    api.alert({
+                        title: '重新登录',
+                        msg: '登录验证已过期，请重新登录。',
+                    }, function(ret, err){
+                        goLogout();
+                    });
+                }
+            } else {
+                alert( JSON.stringify( err ) );
+            }
+        });
+    }
+
+    /** 跳转到年账单页 */
+    function goYearList(y) {
+        api.openWin({
+            name: 'list_year_win',
+            url: './list_year_win.html',
+            pageParam: {
+                type: 'year',
+                year: y
+            },
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 100
+        });
+    }
+
+    /** 跳转到记账页面 */
+    function goAddFrame() {
+        api.sendEvent({
+            name: 'indexFrame',
+            extra: {
+                name: 'add_frm',
+                index: '2'
+            }
+        });
+    }
+
+    /** 跳转到图表页面 */
+    function goChartWin() {
+        api.openWin({
+            name: 'chart_win',
+            url: './chart_win.html',
+            pageParam: {
+                type: 'year',
+                year: api.pageParam.year
+            },
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 200
+        });
+    }
+
+    /** 退出登录 */
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    /** 返回命令 */
+    function closeWin() {
+        api.closeWin({
+        });
+    }
+        
+</script>
+</html>
+</html>
