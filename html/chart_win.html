@@ -5,6 +5,7 @@
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-slider-full.css" />
     <style type="text/css">
         header {
             margin-bottom: 15px;
@@ -13,10 +14,15 @@
             margin-top: 15px;
             margin-bottom: 15px;
         }
+        .chart {
+            padding: 20px 0;
+            margin-top: 20px;
+            /*border-bottom: 1px solid #e0e0e0;*/
+        }
     </style>
 </head>
 <body>
-    <header class="aui-bar aui-bar-nav" id="header" style="padding-top: 20px; position: fixed;" >
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top: 20px; position: fixed; z-index: 1000;" >
         <div class="aui-pull-left">
             <i class="aui-iconfont aui-icon-left" onclick="closeWin();"></i>
         </div>
@@ -27,18 +33,30 @@
     </header>
     <div id="header-bottom"></div>
 
-    <div id="chart-main" style="height:350px"></div>
-    <hr>
-    <div id="chart-InClass" style="height:320px"></div>
-    <hr>
-    <div id="chart-OutClass" style="height:320px"></div>
-    <hr>
+    <div class="aui-slider-full">
+        <div class="aui-slider-list aui-bg-default">
+            <div class="chart" id="chart-main" style="height:350px"></div>
+        </div>
+
+        <div class="aui-slider-list aui-bg-default">
+            <div class="chart" id="chart-InClass" style="height:360px"></div>
+        </div>
+
+        <div class="aui-slider-list aui-bg-default">
+            <div class="chart" id="chart-OutClass" style="height:360px"></div>
+        </div>
+
+        <span class="aui-slider-up">
+            <i class="aui-iconfont aui-icon-top"></i>
+        </span>
+    </div>
 
     <div class="aui-content-padded aui-margin-b-15">
         <p><div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="closeWin();">返回</div></p>
     </div>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-slider-full.js"></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
 <script type="text/javascript" src="../script/echarts.js" ></script>
 <script type="text/javascript">
@@ -60,6 +78,12 @@
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
 
+        //显示加载动画
+        toast.loading({
+            title:"加载中",
+            duration:2000
+        });
+
         //读取页面配置信息
         if (api.pageParam.month) {
             type = 'month';
@@ -78,6 +102,8 @@
         initData();
 
     }
+
+    var sliderFull = new auiSliderFull({direction:'y'});
 
     /** 初始化数据 */
     function initData() {
@@ -109,6 +135,7 @@
             initChartMain();
             initChartInClass();
             initChartOutClass();
+            toast.hide();
         });
     }
 
