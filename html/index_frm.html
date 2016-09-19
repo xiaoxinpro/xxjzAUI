@@ -126,7 +126,7 @@
                         </div>
                     </div>
                     </li>
-                    <li class="aui-list-item aui-list-item-middle">
+                    <li class="aui-list-item aui-list-item-middle" onclick="goAllYearList();">
                     <div class="aui-media-list-item-inner">
                         <div class="aui-list-item-media" style="width: 2rem;">
                             <i class="aui-iconfont aui-icon-calendar" style="font-size: 1.25rem;"></i>
@@ -315,6 +315,14 @@
             year: varYear,
             month: varMonth,
             day: varDay
+        });
+    }
+
+    /** 跳转到历年账单页面 */
+    function goAllYearList() {
+        showListWin({
+            name: 'list_all_year_win',
+            type: 'all_year',
         });
     }
 
