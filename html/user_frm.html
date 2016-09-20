@@ -6,27 +6,101 @@
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
     <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
     <style type="text/css">
-		
+        
     </style>
 </head>
 <body>
     <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
         <div class="aui-title">用户中心</div>
         <div class="aui-pull-right">
-            <a class="aui-btn aui-iconfont aui-icon-refresh" onclick="api.rebootApp();"></a>
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
         </div>
     </header>
     <div id="header-bottom"></div>
-	<p>用户</p>
-    <p><a onclick="clearCache();">清除缓存</a></p>
-    <p><a onclick="getUserInfo();">获取用户信息</a></p>
-    <div>
-        <p id="id-username"></p>
-    </div>
-    <div>
-        <p id="id-email"></p>
-    </div>
-    <p><a onclick="goLogout();">退出登录</a></p>
+    <section class="aui-content aui-refresh-content aui-padded-t-15">
+        <!-- 用户信息 -->
+        <div class="aui-content aui-margin-b-15">
+            <ul class="aui-list aui-media-list">
+                <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-media" style="width: 3rem;">
+                            <img src="../image/login_logo.png" class="aui-img-round aui-list-img-sm">
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title aui-font-size-18" id="id-username"></div>
+                            </div>
+                            <div class="aui-list-item-text aui-font-size-12">
+                                <span id="id-email"></span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 账号与安全 -->
+        <div class="aui-content aui-margin-b-15">
+            <ul class="aui-list aui-list-in">
+                <li class="aui-list-item aui-list-item-middle" onclick="alert('弹出账号与安全');">
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-title">账号与安全</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 记账相关 -->
+        <div class="aui-content aui-margin-b-15">
+            <ul class="aui-list aui-list-in">
+                <li class="aui-list-item aui-list-item-middle" onclick="alert('年度统计');">
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-title">年度统计</div>
+                    </div>
+                </li>
+                <li class="aui-list-item aui-list-item-middle" onclick="alert('分类管理');">
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-title">分类管理</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- APP处理 -->
+        <div class="aui-content aui-margin-b-15">
+            <ul class="aui-list aui-list-in">
+                <!-- 检查更新 -->
+                <li class="aui-list-item aui-list-item-middle" onclick="cheakUpdata();">
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-title">检查更新</div>
+                    </div>
+                </li>
+                <!-- 清除缓存 -->
+                <li class="aui-list-item aui-list-item-middle" onclick="clearCache();">
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-title">清除缓存</div>
+                    </div>
+                </li>
+                <!-- 关于我们 -->
+                <li class="aui-list-item aui-list-item-middle" onclick="alert('弹出关于我们');">
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-title">关于我们</div>
+                    </div>
+                </li>
+            </ul>
+            <p class="aui-list-item-text aui-font-size-12">
+                &nbsp;&nbsp;&nbsp;&nbsp;当APP运行出现问题可以尝试清除缓存并重启应用。
+            </p> 
+        </div>
+
+        <!-- 退出登录 -->
+        <div class="aui-content aui-margin-b-15 aui-padded-l-10 aui-padded-r-10">
+            <div class="aui-btn aui-btn-danger aui-btn-block aui-btn-sm" onclick="goLogout();">
+                退出登录
+            </div>
+        </div>
+    </section>
+
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
@@ -77,21 +151,45 @@
         });
     }
 
+    function cheakUpdata() {
+        setTimeout(function(){
+            api.toast({
+                msg:'当前为最新版本'
+            });
+        },500);
+    }
+
     function goLogout() {
-        api.sendEvent({
-            name: 'xxjzLogout',
-            extra: {
-                value: 'xxjzLogout'
+        api.confirm({
+            title: '退出登录',
+            msg: '您确定要退出登录吗?',
+            buttons: ['退出', '取消']
+        }, function(ret, err) {
+            if (ret && ret.buttonIndex === 1) {
+                api.sendEvent({
+                    name: 'xxjzLogout',
+                    extra: {
+                        value: 'xxjzLogout'
+                    }
+                });
             }
         });
+
     }
 
     function clearCache() {
         $api.byId('id-username').innerHTML = '';
         $api.byId('id-email').innerHTML = '';
+        getUserInfo();
         api.clearCache(function(){
-            api.toast({
-                msg:'清除完成'
+            api.confirm({
+                title: '清除完成',
+                msg: '是否要重启应该?',
+                buttons: ['重启', '取消']
+            }, function(ret, err) {
+                if (ret && ret.buttonIndex === 1) {
+                    api.rebootApp();
+                }
             });
         });
     }
