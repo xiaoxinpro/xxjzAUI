@@ -221,9 +221,7 @@
             </div>
         </div>
     </div>
-<!--     <div class="aui-btn aui-btn-block aui-btn-sm" id="id-load-more" onclick="loadMore();" style="display:none;">
-        加载更多
-    </div> -->
+    <div class="aui-btn aui-btn-block aui-btn-sm aui-margin-b-15" id="id-cmd-more" onclick="cmdMore();" style="display:block;"> 更多账单 </div>
     <div class="loading" id="id-load-more" onclick="loadMore();" style="display:none;">
         <span></span>
         <span></span>
@@ -233,6 +231,7 @@
     </div>
     </section>
 </body>
+<script type="text/javascript" src="../script/app.js"></script>
 <script type="text/javascript" src="../script/base64.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
@@ -243,6 +242,7 @@
     var uid = 0;
     var valPage = 1;
     var valPageMax = 1;
+    var pageData = {};
     var sumInMoney = 0;
     var sumOutMoney = 0;
     var numAnimOptions = {
@@ -262,8 +262,8 @@
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
-        //顶部导航栏标题
-        $api.byId('id-month').innerHTML = api.pageParam.month;
+        
+        pageData = api.pageParam;
 
         // toast.loading({
         //     title:"加载中",
@@ -307,6 +307,9 @@
             duration:2000
         });
 
+        //顶部导航栏标题
+        $api.byId('id-month').innerHTML = pageData.month;
+
         //关闭上拉监听
         valPage = 1;
         valPageMax = 1;
@@ -349,10 +352,10 @@
         var jsonData = {};
         jsonData.type = 'get';
         jsonData.data = BASE64.encoder(JSON.stringify({
-            gettype: api.pageParam.type,
-            year: api.pageParam.year,
-            month: api.pageParam.month,
-            day: api.pageParam.day,
+            gettype: pageData.type,
+            year: pageData.year,
+            month: pageData.month,
+            day: pageData.day,
             page: p
         }));
 
@@ -369,11 +372,12 @@
             for (var i = 0; i < ListData.length; i++) {
                 $api.byId('id-list-ul-none').innerHTML = '';
                 var strID = 'id-ul-' + ListData[i].actime + '';
+                var strDate = $app.strDateFormat(ListData[i].actime, 'yyyy年m月d日&nbsp;星期w&nbsp;')
                 if (!$api.byId(strID)) {
                     html = '<ul class="aui-list aui-media-list" id="'+ strID +'">'+
                         '<li class="aui-list-header">'+
                             '<div class="aui-row">'+
-                                '<div class="aui-col-xs-4">'+ ListData[i].actime +'</div>'+
+                                '<div class="aui-col-xs-8">'+ strDate +'</div>'+
                                 // '<div class="aui-col-xs-2">'+
                                 //     '<div class="aui-pull-right">'+
                                 //         '<i class="fa fa-plus-square-o"></i>&nbsp;'+
@@ -433,6 +437,16 @@
                 $api.byId(strID).insertAdjacentHTML('beforeEnd', html);
             }
             callback(ret);
+            //添加今日,昨日提示文字
+            var intTime = parseInt(new Date().getTime()/1000);
+            var strToday = 'id-ul-' + $app.intTimeFormat(intTime, 'yyyy-mm-dd'); 
+            var strYesday = 'id-ul-' + $app.intTimeFormat(intTime - 86400, 'yyyy-mm-dd'); 
+            if ($api.byId(strToday)) {
+                $api.first($api.first($api.first($api.byId(strToday), 'li'), 'div'), 'div').innerHTML = '今天';
+            }
+            if ($api.byId(strYesday)) {
+                $api.first($api.first($api.first($api.byId(strYesday), 'li'), 'div'), 'div').innerHTML = '昨天';
+            }
         });
     }
 
@@ -441,6 +455,7 @@
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
             method: 'get',
+            cache: true,
             data: {
                 values: jsonData
             }
@@ -496,6 +511,49 @@
         }
     }
 
+    /** 更多按钮 */
+    function cmdMore() {
+        var prevYear  = pageData.year;
+        var nextYear  = pageData.year;
+        var prevMonth = (parseInt(pageData.month) - 1);
+        var nextMonth = (parseInt(pageData.month) + 1);
+        if (prevMonth <= 0) {
+            prevMonth = 12;
+            prevYear--;
+        }
+        if (nextMonth >= 13) {
+            nextMonth = 1;
+            nextYear++;
+        }
+
+        api.actionSheet({
+            title: '更多账单',
+            cancelTitle: '取消', //4
+            destructiveTitle: new Date().getFullYear() + '年度账单', //1
+            buttons: [
+                prevYear + '年' + prevMonth + '月账单（上月）', //2
+                nextYear + '年' + nextMonth + '月账单（下月）' //3
+            ]
+        }, function(ret, err) {
+            var index = ret.buttonIndex;
+            if (index === 1) {
+                goYearList(pageData.year);
+            } else if (index === 2) {
+                pageData.year = prevYear;
+                pageData.month = prevMonth;
+                initData(function(){
+                    toast.hide();
+                });
+            } else if (index === 3) {
+                pageData.year = nextYear;
+                pageData.month = nextMonth;
+                initData(function(){
+                    toast.hide();
+                });
+            }
+        });
+    }
+
     /** 跳转到编辑页 */
     function goEditData(id) {
         api.sendEvent({
@@ -516,6 +574,26 @@
                 name: 'add_frm',
                 index: '2'
             }
+        });
+    }
+
+    /** 跳转到年账单页 */
+    function goYearList(y) {
+        api.openWin({
+            name: 'list_year_win',
+            url: './list_year_win.html',
+            pageParam: {
+                type: 'year',
+                year: y
+            },
+            reload: true,
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_right'
+            },
+            delay: 100
         });
     }
 
