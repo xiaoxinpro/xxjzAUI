@@ -226,6 +226,7 @@
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
             method: 'get',
+            cache: true,
             data: {
                 values: jsonData
             }
@@ -258,6 +259,7 @@
                 type: 'year',
                 year: y
             },
+            reload: true,
             slidBackEnabled: true,
             slidBackType: 'edge',
             animation: {
