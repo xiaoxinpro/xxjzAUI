@@ -67,6 +67,7 @@
 </body>
 <script type="text/javascript" src="./script/api.js"></script>
 <script type="text/javascript">
+    var user = {uid: 0};
     apiready = function(){
         api.setStatusBarStyle({
             style: 'light'
@@ -99,8 +100,9 @@
         });
 
         //主流程
-        var user = $api.getStorage('user');
+        user = $api.getStorage('user');
         if (user && (user.uid > 0)) {
+            uid = user.uid;
             AutoLogin(user);
         } else {
             LoginFrame();
@@ -154,8 +156,9 @@
             if (ret) {
                 callback(ret);
             } else {
+
                 callback({
-                    uid: 0,
+                    uid: uid,
                     uname: err['msg']+'（请联系管理员）'
                 });
             }
