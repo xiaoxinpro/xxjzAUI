@@ -363,6 +363,16 @@
                 $api.byId(strID).insertAdjacentHTML('beforeEnd', html);
             }
             callback(ret);
+            //添加今日,昨日提示文字
+            var intTime = parseInt(new Date().getTime()/1000);
+            var strToday = 'id-ul-' + $app.intTimeFormat(intTime, 'yyyy-mm-dd'); 
+            var strYesday = 'id-ul-' + $app.intTimeFormat(intTime - 86400, 'yyyy-mm-dd'); 
+            if ($api.byId(strToday)) {
+                $api.first($api.first($api.first($api.byId(strToday), 'li'), 'div'), 'div').innerHTML += '(今天)';
+            }
+            if ($api.byId(strYesday)) {
+                $api.first($api.first($api.first($api.byId(strYesday), 'li'), 'div'), 'div').innerHTML += '(昨天)';
+            }
         });
     }
 
@@ -371,6 +381,7 @@
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/account',
             method: 'get',
+            cache: true,
             data: {
                 values: jsonData
             }
