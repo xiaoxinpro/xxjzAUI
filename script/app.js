@@ -8,6 +8,16 @@
     var u = {}
 
     /**
+     * 时间戳转字符串格式 (时间戳为标准10位整数, 需在js时间戳/1000)
+     */
+    u.intTimeFormat = function(intTime, format) {
+        intTime = parseInt(intTime);
+        var d = new Date(intTime * 1000);
+        var strDate = (d.getFullYear()) + "-" + (d.getMonth() + 1) + "-" + (d.getDate());
+        return u.strDateFormat(strDate, format);
+    }
+
+    /**
      * 日期字符串格式
      */
     u.strDateFormat = function(strDate, format) {
@@ -34,6 +44,11 @@
             } else if (/d/g.test(format)) {
                 obj.day = '' + parseInt(obj.day);
                 format = format.replace(/d+/g, obj.day);
+            }
+            if (/w/g.test(format)) {
+                var arrWeek = ['日', '一', '二', '三', '四', '五', '六', '日'];
+                var week = new Date(obj.year+'/'+obj.month+'/'+obj.day).getDay();
+                format = format.replace(/w+/g, arrWeek[week]);
             }
             return format;
         } else {
