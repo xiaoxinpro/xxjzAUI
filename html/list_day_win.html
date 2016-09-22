@@ -324,11 +324,12 @@
 
             for (var i = 0; i < ListData.length; i++) {
                 var strID = 'id-ul-' + ListData[i].actime + '';
+                var strDate = $app.strDateFormat(ListData[i].actime, 'yyyy年m月d日&nbsp;星期w&nbsp;');
                 if (!$api.byId(strID)) {
                     html = '<ul class="aui-list aui-media-list" id="'+ strID +'">'+
                         '<li class="aui-list-header">'+
                             '<div class="aui-row">'+
-                                '<div class="aui-col-xs-4">'+ ListData[i].actime +'</div>'+
+                                '<div class="aui-col-xs-8">'+ strDate +'</div>'+
                             '</div>'+
                         '</li></ul>';
                     if (ListData[i].actime == valDate) {
@@ -368,10 +369,10 @@
             var strToday = 'id-ul-' + $app.intTimeFormat(intTime, 'yyyy-mm-dd'); 
             var strYesday = 'id-ul-' + $app.intTimeFormat(intTime - 86400, 'yyyy-mm-dd'); 
             if ($api.byId(strToday)) {
-                $api.first($api.first($api.first($api.byId(strToday), 'li'), 'div'), 'div').innerHTML += '(今天)';
+                $api.first($api.first($api.first($api.byId(strToday), 'li'), 'div'), 'div').innerHTML = '今天';
             }
             if ($api.byId(strYesday)) {
-                $api.first($api.first($api.first($api.byId(strYesday), 'li'), 'div'), 'div').innerHTML += '(昨天)';
+                $api.first($api.first($api.first($api.byId(strYesday), 'li'), 'div'), 'div').innerHTML = '昨天';
             }
         });
     }
