@@ -102,7 +102,6 @@
         //主流程
         user = $api.getStorage('user');
         if (user && (user.uid > 0)) {
-            uid = user.uid;
             AutoLogin(user);
         } else {
             LoginFrame();
@@ -156,9 +155,8 @@
             if (ret) {
                 callback(ret);
             } else {
-
                 callback({
-                    uid: uid,
+                    uid: user.uid,
                     uname: err['msg']+'（请联系管理员）'
                 });
             }
@@ -223,56 +221,5 @@
             // }
         });
     }
-
-    // /** 3DTouch配置 */
-    // var 3DTouch = api.require('3DTouch');
-    // 3DTouch.setShortcutItems({
-    //     items:[{
-    //         type:'xxjz.add',
-    //         title:'记账',
-    //         icon:{
-    //             type:0
-    //         }
-    //     },
-    //     {
-    //         type:'xxjz.find',
-    //         title:'查询',
-    //         icon:{
-    //             type:0
-    //         }
-    //     },
-    //     {
-    //         type:'xxjz.chart',
-    //         title:'统计',
-    //         icon:{
-    //             type:0
-    //         }
-    //     },
-    //     {
-    //         type:'xxjz.site',
-    //         title:'设置',
-    //         icon:{
-    //             type:0
-    //         }
-    //     }]
-    // });
-
-    // /** 3DTouch监听 */
-    // 3DTouch.setListener(
-    //     function(ret,err){
-    //         var type = ret.type;
-    //         if (type == 'xxjz.add') {
-
-    //         } else if (type == 'xxjz.find') {
-
-    //         } else if (type == 'xxjz.chart') {
-                
-    //         } else if (type == 'xxjz.site') {
-                
-    //         } else {
-                
-    //         }
-    //     }
-    // );
 </script>
 </html>
