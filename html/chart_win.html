@@ -121,7 +121,7 @@
         }
 
         //获取图表数据
-        getChartData({type:type, date:(Date.parse(new Date(year,month,1))/1000)}, function(ret){
+        getChartData({type:type, date:(Date.parse(new Date(year,month-1,1))/1000)}, function(ret){
             chartData.InMoney = objToArr(ret.InMoney);
             chartData.OutMoney = objToArr(ret.OutMoney);
             chartData.OverMoney = objToArr(ret.SurplusMoney);
@@ -141,6 +141,7 @@
 
     /** 获取图标数据 */
     function getChartData(data, callback) {
+        // alert(JSON.stringify(data));
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/chart',
             method: 'get',
@@ -160,6 +161,17 @@
 
     /** 填充主图表 */
     function initChartMain() {
+        if (type === 'year') {
+            var xData = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+        } else if (type === 'month') {
+            var xData = [];
+            for (var i = 1; i <= chartData.OverMoney.length; i++) {
+                xData.push(i + '日');
+            }
+        } else {
+            return;
+        }
+
         chartMain.setOption({
             title: {
                 text: title + '收入与支出金额汇总',
@@ -193,7 +205,7 @@
             },
             xAxis: {
                 type: 'category',
-                data: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+                data: xData
             },
             yAxis: {
                 type : 'value'
