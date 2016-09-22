@@ -82,7 +82,7 @@
                     </div>
                 </li>
                 <!-- 关于我们 -->
-                <li class="aui-list-item aui-list-item-middle" onclick="alert('弹出关于我们');">
+                <li class="aui-list-item aui-list-item-middle" onclick="openWin('about_win');">
                     <div class="aui-list-item-inner aui-list-item-arrow">
                         <div class="aui-list-item-title">关于我们</div>
                     </div>
@@ -122,6 +122,7 @@
         getUserInfo();
     }
 
+    /** 获取用户信息 */
     function getUserInfo() {
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/user',
@@ -151,6 +152,7 @@
         });
     }
 
+    /** 检查更新命令 */
     function cheakUpdata() {
         setTimeout(function(){
             api.toast({
@@ -159,6 +161,7 @@
         },500);
     }
 
+    /** 退出登录命令 */
     function goLogout() {
         api.confirm({
             title: '退出登录',
@@ -174,9 +177,9 @@
                 });
             }
         });
-
     }
 
+    /** 清除缓存命令 */
     function clearCache() {
         $api.byId('id-username').innerHTML = '';
         $api.byId('id-email').innerHTML = '';
@@ -191,6 +194,21 @@
                     api.rebootApp();
                 }
             });
+        });
+    }
+
+    /** 打开指定窗体 */
+    function openWin(name){
+        api.openWin({
+            name: ''+name+'',
+            url: ''+name+'.html',
+            slidBackEnabled: true,
+            slidBackType: 'edge',
+            animation: {
+                type: 'movein',
+                subtype: 'from_bottom'
+            },
+            delay: 100
         });
     }
 
