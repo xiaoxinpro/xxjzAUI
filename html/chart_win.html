@@ -117,6 +117,7 @@
         } else {
             $api.byId('title').innerHTML = 'APP出错';
             api.alert({ title: '应用出错', msg: '页面跳转错误，请重新安装APP。' });
+            closeWin();
             return;
         }
 
@@ -129,8 +130,8 @@
             chartData.OutClassMoney = objToArr(ret.OutClassMoney);
             chartData.InSumMoney = ret.InSumMoney;
             chartData.OutSumMoney = ret.OutSumMoney;
-            chartData.InSumClassMoney = objToKeyArr(ret.InSumClassMoney);
-            chartData.OutSumClassMoney = objToKeyArr(ret.OutSumClassMoney);
+            chartData.InSumClassMoney = objToKeyArr(ret.InSumClassMoney, 0);
+            chartData.OutSumClassMoney = objToKeyArr(ret.OutSumClassMoney, 0);
             chartData.OverSumMoney = objToArr(ret.SurplusSumMoney);
             initChartMain();
             initChartInClass();
@@ -162,26 +163,35 @@
     /** 填充主图表 */
     function initChartMain() {
         if (type === 'year') {
-            var xData = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+            yearChartMain();
         } else if (type === 'month') {
-            var xData = [];
-            for (var i = 1; i <= chartData.OverMoney.length; i++) {
-                xData.push(i + '日');
-            }
+            monthChartMain();
         } else {
             return;
         }
+    }
 
+    /** 年度主图表 */
+    function yearChartMain() {
         chartMain.setOption({
             title: {
                 text: title + '收入与支出金额汇总',
                 top: 'top',
                 x: 'center'
             },
-            color: ['#90ee7e','#ff0066','#f7a35c','7cb5ec'],  //蓝色：3398DB 红色：c23531 青色：61a0a8 橙色：d48265 绿色：91c7ae
+            color: [
+                "#72d572", //绿
+                "#f36360", //红
+                "#ffb74d", //橙
+                "#4fc3f7", //蓝
+                "#a1887f", //棕
+                "#dce775", //黄
+                "#9575cd"  //紫
+            ],
             tooltip : {
                 trigger: 'axis',
                 extraCssText: 'text-align: left;',
+                formatter: chartMainFormatter,
                 axisPointer : {            // 坐标轴指示器，坐标轴触发有效
                     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
@@ -205,7 +215,7 @@
             },
             xAxis: {
                 type: 'category',
-                data: xData
+                data: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
             },
             yAxis: {
                 type : 'value'
@@ -233,6 +243,88 @@
         });
     }
 
+    /** 月份主图表 */
+    function monthChartMain() {
+        var xData = [];
+        for (var i = 1; i <= chartData.OverMoney.length; i++) {
+            xData.push(i + '日');
+        }
+        chartMain.setOption({
+            title: {
+                text: title + '收入与支出金额汇总',
+                top: 'top',
+                x: 'center'
+            },
+            color: [
+                "#72d572", //绿
+                "#f36360", //红
+                "#ffb74d", //橙
+                "#4fc3f7", //蓝
+                "#a1887f", //棕
+                "#dce775", //黄
+                "#9575cd"  //紫
+            ],
+            tooltip : {
+                trigger: 'axis',
+                extraCssText: 'text-align: left;',
+                formatter: chartMainFormatter,
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {
+                data:['收入','支出','剩余'],
+                selected:{
+                    '收入' : false,
+                    '支出' : false,
+                    '月剩余' : true
+                },
+                top: 'bottom',
+                x: 'center'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '12%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: xData
+            },
+            yAxis: {
+                type : 'value'
+            },
+            barGap: '5%',
+            series: [{
+                name: '收入',
+                type: 'bar',
+                data: chartData.InMoney
+            },{
+                name: '支出',
+                type: 'bar',
+                data: chartData.OutMoney
+            },{
+                name: '剩余',
+                type: 'line',
+                smooth: true,
+                data: chartData.OverSumMoney
+            }]
+        });
+    }
+
+    /** 主图表提示框 */
+    function chartMainFormatter(params, ticket, callback) {
+        // alert(JSON.stringify(params));
+        var html = title + params[0].name + '<br />';
+        for (var i = 0; i < params.length; i++) {
+            html += '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:' + params[i].color + '"></span>';
+            html += params[i].seriesName + '：' + params[i].value + '元<br />';
+        }
+        callback(ticket, html);
+        return html;
+    }
+
     /** 填充收入分类饼图 */
     function initChartInClass() {
         chartInClass.setOption({
@@ -241,8 +333,29 @@
                 subtext: '总收入'+ chartData.InSumMoney +'元',
                 x:'center'
             },
-            color: ["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
-        "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+            color: [
+                "#2ec7c9",
+                "#b6a2de",
+                "#5ab1ef",
+                "#ffb980",
+                "#d87a80",
+                "#8d98b3",
+                "#e5cf0d",
+                "#97b552",
+                "#95706d",
+                "#dc69aa",
+                "#07a2a4",
+                "#9a7fd1",
+                "#588dd5",
+                "#f5994e",
+                "#c05050",
+                "#59678c",
+                "#c9ab00",
+                "#7eb00a",
+                "#6f5553",
+                "#c14089"
+            ],
+            //["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee","#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
             tooltip : {
                 trigger: 'item',
                 formatter: "{b} : ({d}%)<br/>{c} 元"
@@ -284,8 +397,29 @@
                 subtext: '总支出'+ chartData.OutSumMoney +'元',
                 x:'center'
             },
-            color: ["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
-        "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+            color: [
+                "#2ec7c9",
+                "#b6a2de",
+                "#5ab1ef",
+                "#ffb980",
+                "#d87a80",
+                "#8d98b3",
+                "#e5cf0d",
+                "#97b552",
+                "#95706d",
+                "#dc69aa",
+                "#07a2a4",
+                "#9a7fd1",
+                "#588dd5",
+                "#f5994e",
+                "#c05050",
+                "#59678c",
+                "#c9ab00",
+                "#7eb00a",
+                "#6f5553",
+                "#c14089"
+            ],
+            //["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee","#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
             tooltip : {
                 trigger: 'item',
                 formatter: "{b} : ({d}%)<br/>{c} 元"
@@ -319,6 +453,7 @@
         });
     }
 
+
     /** 对象转数组 */
     function objToArr(obj) {
         var arr = [];
@@ -333,17 +468,26 @@
     }
 
     /** 对象转带键值数组 */
-    function objToKeyArr(obj) {
+    function objToKeyArr(obj, minValue) {
         var arr = [];
         for(var key in obj) {
             if (typeof(obj[key]) === 'object') {
                 arr[key] = objToKeyArr(obj[key]);
             } else {
+                if ((typeof(minValue)==='number') && obj[key] <= minValue) {
+                    continue;
+                }
                 arr.push({
                     name: key,
                     value: obj[key]
                 });
             }
+        }
+        if ((typeof(minValue)==='number') && (arr.length === 0)) {
+            arr.push({
+                name: '无数据',
+                value: 0
+            });
         }
         return arr;
     }
