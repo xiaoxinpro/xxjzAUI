@@ -32,8 +32,10 @@
         </div>
     </header>
     <div id="header-bottom"></div>
-
-    <div class="aui-slider-full">
+        <div class="chart" id="chart-main" style="height:350px"></div>
+        <div class="chart" id="chart-InClass" style="height:360px"></div>
+        <div class="chart" id="chart-OutClass" style="height:360px"></div>
+<!--     <div class="aui-slider-full">
         <div class="aui-slider-list aui-bg-default">
             <div class="chart" id="chart-main" style="height:350px"></div>
         </div>
@@ -49,7 +51,7 @@
         <span class="aui-slider-up">
             <i class="aui-iconfont aui-icon-top"></i>
         </span>
-    </div>
+    </div> -->
 
     <div class="aui-content-padded aui-margin-b-15">
         <p><div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="closeWin();">返回</div></p>
@@ -71,12 +73,19 @@
     var chartOutClass = echarts.init(document.getElementById('chart-OutClass'));
     apiready = function(){
         api.parseTapmode();
+        //切换为横竖屏模式
+        api.setScreenOrientation({
+            orientation: 'auto'
+        });
         //不支持沉浸式效果
         if (!api.statusBarAppearance) {
             $api.byId('header').style.paddingTop = 0;
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //图表大小设置
+        chartResize();
 
         //显示加载动画
         toast.loading({
@@ -101,6 +110,19 @@
         //初始化数据
         initData();
 
+    }
+
+    /** 自适应窗体 */
+    window.onresize = chartResize;
+
+    function chartResize() {
+        var chartHeight = (api.winHeight - $api.offset($api.byId('chart-main')).t) + 'px';
+        $api.byId('chart-main').style.height = chartHeight;
+        $api.byId('chart-InClass').style.height = chartHeight;
+        $api.byId('chart-OutClass').style.height = chartHeight;
+        chartMain.resize();
+        chartInClass.resize();
+        chartOutClass.resize();
     }
 
     var sliderFull = new auiSliderFull({direction:'y'});
@@ -224,11 +246,17 @@
             series: [{
                 name: '收入',
                 type: 'bar',
-                data: chartData.InMoney
+                data: chartData.InMoney,
+                animationDelay: function (idx) {
+                    return idx * 30;
+                }
             },{
                 name: '支出',
                 type: 'bar',
-                data: chartData.OutMoney
+                data: chartData.OutMoney,
+                animationDelay: function (idx) {
+                    return idx * 30 + 30;
+                }
             },{
                 name: '月剩余',
                 type: 'line',
@@ -494,6 +522,10 @@
     
     /** 关闭窗体 */
     function closeWin(){
+        //切换为竖屏模式
+        api.setScreenOrientation({
+            orientation: 'auto_portrait'
+        });
         api.closeWin({
         });
     }
