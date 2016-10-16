@@ -243,6 +243,7 @@
     var valPage = 1;
     var valPageMax = 1;
     var pageData = {};
+    var addMoney = 0.00;
     var sumInMoney = 0;
     var sumOutMoney = 0;
     var numAnimOptions = {
@@ -374,28 +375,12 @@
                 var strID = 'id-ul-' + ListData[i].actime + '';
                 var strDate = $app.strDateFormat(ListData[i].actime, 'yyyy年m月d日&nbsp;星期w&nbsp;');
                 if (!$api.byId(strID)) {
+                    addMoney = 0.00;
                     html = '<ul class="aui-list aui-media-list" id="'+ strID +'">'+
                         '<li class="aui-list-header">'+
                             '<div class="aui-row">'+
                                 '<div class="aui-col-xs-8">'+ strDate +'</div>'+
-                                // '<div class="aui-col-xs-2">'+
-                                //     '<div class="aui-pull-right">'+
-                                //         '<i class="fa fa-plus-square-o"></i>&nbsp;'+
-                                //         '<span id="id-in-money-'+ strID +'">0.00</span>'+
-                                //     '</div>'+
-                                // '</div>'+
-                                // '<div class="aui-col-xs-3">'+
-                                //     '<div class="aui-pull-right">'+
-                                //         '<i class="fa fa-minus-square-o"></i>&nbsp;'+
-                                //         '<span id="id-out-money-'+ strID +'">0.00</span>'+
-                                //     '</div>'+
-                                // '</div>'+
-                                // '<div class="aui-col-xs-3">'+
-                                //     '<div class="aui-pull-right">'+
-                                //         '<i class="fa fa-rmb"></i>&nbsp;'+
-                                //         '<span id="id-over-money-'+ strID +'">0.00</span>'+
-                                //     '</div>'+
-                                // '</div>'+
+                                '<div class="aui-col-xs-4" style="text-align: right;"></div>'+
                             '</div>'+
                         '</li></ul>';
                     ListUl.insertAdjacentHTML('beforeEnd', html);
@@ -406,17 +391,13 @@
                 
                 if (ListData[i].zhifu == 1) {
                     var ListImage = 'in';
-                    // inMoney +=  parseFloat(ListData[i].acmoney);
-                    // overMoney += inMoney;
-                    // $api.byId('id-in-money-' + strID).innerHTML = '' + inMoney.toFixed(2) + '';
-                    // $api.byId('id-over-money-' + strID).innerHTML = '' + overMoney.toFixed(2) + '';
+                    addMoney = addMoney + parseFloat(ListData[i].acmoney);
                 } else {
                     var ListImage = 'out';
-                    // outMoney +=  parseFloat(ListData[i].acmoney);
-                    // overMoney -= outMoney;
-                    // $api.byId('id-out-money-' + strID).innerHTML = '' + outMoney.toFixed(2) + '';
-                    // $api.byId('id-over-money-' + strID).innerHTML = '' + overMoney.toFixed(2) + '';
+                    addMoney = addMoney - parseFloat(ListData[i].acmoney);
                 }
+
+                $api.last($api.first($api.first($api.byId(strID), 'li'), 'div'), 'div').innerHTML = '合计：' + addMoney.toFixed(2) + '元';
 
                 html = '<li class="aui-list-item aui-list-item-middle">'+
                         '<div class="aui-media-list-item-inner" onclick="goEditData('+ ListData[i].acid +');">'+
