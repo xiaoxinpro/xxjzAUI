@@ -1,5 +1,7 @@
 #小歆记账APICloud项目(AUI前端框架)
 
+![](http://upload-images.jianshu.io/upload_images/1568014-caeefa6ab53be35b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 ##简介
 
 小歆记账AUI项目(APICloud客户端) 是一个基于APICloud + AUI的记账应用，同时兼容安卓和iOS平台，以下简称小歆记账AUI。
