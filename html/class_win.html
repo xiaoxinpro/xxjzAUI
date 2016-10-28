@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+        input[type="date"] {
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-pull-left">
+            <i class="aui-iconfont aui-icon-left" onclick="closeWin();"></i>
+        </div>
+        <div class="aui-title">
+            <div class="aui-bar aui-bar-btn aui-bar-btn-round">
+                <div class="aui-bar-btn-item aui-active">支出分类</div>
+                <div class="aui-bar-btn-item">收入分类</div>
+            </div>
+        </div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <div class="aui-content aui-margin-b-15 aui-padded-t-15">
+        <!-- 添加分类布局 -->
+        <section class="aui-content">
+            <div class="aui-card-list">
+                <div class="aui-card-list-header">
+                    <span class="aui-text-danger" id="div-class-name">添加支出分类</span>
+                </div>
+                <div class="aui-card-list-content-padded">
+                    <ul class="aui-list aui-form-list">
+                        <!-- 分类类别 -->
+                        <input type="hidden" id="class-type" value="2">
+
+                        <!-- 分类名称 -->
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label">
+                                    分类名称
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <input type="text" id="class-name" placeholder="输入支出分类名称" onchange="cheakName();"/>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="aui-card-list-footer">
+                    <div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdAdd();">添加</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分类列表布局 -->
+        <section class="aui-content">
+            <div class="aui-card-list" >
+                <div class="aui-card-list-header">
+                    <span class="aui-text-danger" id="class-list-header">支出分类列表</span>
+                </div>
+                <div class="aui-content aui-margin-b-15 aui-margin-l-15 aui-margin-r-15">
+                    <ul class="aui-list aui-list-in" id="class-list">
+                        <li class="aui-list-item aui-list-item-middle">
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-title">吃饭</div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-title">交通</div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner aui-list-item-arrow">
+                                <div class="aui-list-item-title">生活</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="aui-card-list-footer aui-text-center">
+                    <div class="aui-btn aui-btn-block aui-btn-sm" onclick="closeWin();">返回</div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/base64.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var toast = new auiToast();
+    var now = new Date();
+    var strNow = '';
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //页面显示初始化
+        if (api.pageParam.type == 'in') {
+            $api.byId('class-type').value = 1;
+        } else {
+            $api.byId('class-type').value = 2;
+        }
+        initList();
+
+        //监听分类更新
+        api.addEventListener({
+            name: 'retClassData'
+        }, function(ret, err) {
+            // alert( JSON.stringify( ret ) );
+            initList();
+        });
+    }
+
+    var bar = document.querySelectorAll(".aui-bar-btn");
+    if(bar){
+        for(var i=0; i<bar.length;i++){
+            var d = bar[i];
+            var tab = new auiTab({
+                element:bar[i],
+                repeatClick:false
+            },function(ret){
+                $api.byId('class-name').value = '';
+                if (ret.index == 1) {
+                    showClass('out');
+                    // alert('添加支出');
+                }
+                if (ret.index == 2) {
+                    showClass('in');
+                    // alert('添加收入');
+                }
+            });
+
+        }
+    }
+
+    /** 初始化表单 */
+    function initList() {
+        $api.byId('class-name').value = '';
+        if ($api.byId('class-type').value == 1) {
+            showClass('in');
+        } else {
+            showClass('out');
+        }
+    }
+
+    /** 初始化显示分类(收支类别) */
+    function showClass(type) {
+        if (type == 'in') {
+            var ClassList = $api.getStorage('inClass');
+            $api.text($api.byId('div-class-name'), '添加收入分类');
+            $api.text($api.byId('class-list-header'), '收入分类列表');
+            $api.byId('class-name').placeholder = '输入收入分类名称';
+            $api.byId('class-type').value = '1';
+        } else {
+            var ClassList = $api.getStorage('outClass');
+            $api.text($api.byId('div-class-name'), '添加支出分类');
+            $api.text($api.byId('class-list-header'), '支出分类列表');
+            $api.byId('class-name').placeholder = '输入支出分类名称';
+            $api.byId('class-type').value = '2';
+        }
+
+        var ListUl = $api.byId('class-list');
+        ListUl.innerHTML = "";
+        for (var id in ClassList) {
+            ListUl.insertAdjacentHTML('beforeEnd', ''+
+                '<li class="aui-list-item aui-list-item-middle" onclick="alert('+id+');">'+
+                    '<div class="aui-list-item-inner aui-list-item-arrow">'+
+                        '<div class="aui-list-item-title">'+ClassList[id]+'</div>'+
+                    '</div>'+
+                '</li>'+
+            '');
+        }
+    }
+
+    /** 显示校验结果 */
+    function showCheak(dom, cheak) {
+        if (cheak) {
+            $api.removeCls(dom, 'aui-warning');
+            $api.addCls(dom, 'aui-success');
+        } else {
+            $api.removeCls(dom, 'aui-success');
+            $api.addCls(dom, 'aui-warning');
+        }
+    }
+
+    /** 校验输入分类名 */
+    function cheakName() {
+        var dom = $api.byId('class-name');
+        var cheak = ($api.trim(dom.value).length > 0);
+        showCheak(dom, cheak);
+        return cheak;
+    }
+
+
+    /** 校验添加分类数据 */
+    function cheakClassData() {
+        if (!cheakName()) {
+            api.alert({
+                title: '分类名错误',
+                msg: '分类名不能为空!',
+            }, function(ret, err){
+                $api.byId('class-name').focus;
+            });
+            return false;
+        }
+        return true;
+    }
+
+    /** 发送添加分类数据(data数组, 回调函数) */
+    function sendAddData(data, callback) {
+        api.ajax({
+            url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/aclass',
+            method: 'post',
+            data: {
+                values: { 
+                    type: 'add',
+                    data: data
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                // alert( JSON.stringify( ret ) );
+                callback(ret);
+            } else {
+                //alert( JSON.stringify( err ) );
+                callback({
+                    uid: 0,
+                    data: err['msg']+'（请联系管理员）'
+                });
+            }
+        });
+    }
+
+    function cmdAdd() {
+        var addData = {};
+        addData.classname = $api.byId('class-name').value;
+        addData.classtype = $api.byId('class-type').value;
+        addData.ufid      = $api.getStorage('user').uid;
+        // alert(JSON.stringify(addData));
+        if (!cheakClassData()) {
+            return;
+        }
+        var strData = BASE64.encoder(JSON.stringify(addData));
+        toast.loading({
+            title:"添加分类中",
+            duration:2000
+        },function(ret){
+            sendAddData(strData,function(ret){
+                toast.hide();
+                if (ret) {
+                    //alert(JSON.stringify(ret));
+                    if (ret.data) {
+                        if (ret.data[0]) {
+                            //更新分类数据
+                            api.sendEvent({
+                                name: 'updataClass'
+                            });
+
+
+                            //显示记账完成提示框
+                            toast.success({
+                                title: '添加完成',
+                                duration:2000
+                            });
+                        } else {
+                            //分类失败
+                            api.alert({
+                                title: '添加失败',
+                                msg: ret.data[1]
+                            },function(){
+                                initList();
+                            });
+                        }
+                    } else {
+                        //未登录
+                        toast.fail({
+                            title: '未登录',
+                            duration:1000
+                        },function(){});
+
+                        //延时页面跳转
+                        setTimeout(function(){
+                            goLogout();
+                        }, 900);
+                    }
+                } else {
+                    api.alert({
+                        title: '添加失败',
+                        msg: '连接服务器失败，请稍后再试！'
+                    },function(){});
+                }
+            });  
+            // setTimeout(function(){
+            //     toast.hide();
+            // }, 3000)
+        });
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    /** 关闭窗体 */
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+
+</script>
+</html>
