@@ -58,7 +58,7 @@
                         <div class="aui-list-item-title">年度统计</div>
                     </div>
                 </li>
-                <li class="aui-list-item aui-list-item-middle" onclick="alert('分类管理');">
+                <li class="aui-list-item aui-list-item-middle" onclick="openWin('class_win');">
                     <div class="aui-list-item-inner aui-list-item-arrow">
                         <div class="aui-list-item-title">分类管理</div>
                     </div>
@@ -79,6 +79,7 @@
                 <li class="aui-list-item aui-list-item-middle" onclick="clearCache();">
                     <div class="aui-list-item-inner aui-list-item-arrow">
                         <div class="aui-list-item-title">清除缓存</div>
+                        <div class="aui-list-item-right" id="id-cache-size"></div>
                     </div>
                 </li>
                 <!-- 关于我们 -->
@@ -115,6 +116,21 @@
         }
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //计算缓存大小
+        api.getCacheSize(function(ret) {
+            var size = ret.size;
+            var unit = 'KB';
+            if (size <= 0) {
+                size = 0;
+            } else if (size < 100000) {
+                size = size / 1000;
+            } else {
+                size = size / 1000 / 1000;
+                unit = 'MB';
+            }
+            $api.byId('id-cache-size').innerHTML = '' + size.toFixed(2) + unit;
+        });
 
         //获取用户信息
         user = $api.getStorage('user');
