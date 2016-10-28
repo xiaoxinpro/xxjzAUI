@@ -87,7 +87,49 @@
             tab.setActive(1);
         });
 
-        getUsualData(function(){});
+        //更新分类监听
+        api.addEventListener({
+            name: 'updataClass'
+        }, function(ret, err) {
+            getClassData(function(data){
+                if (data) {
+                    $api.setStorage('inClass', data.in);
+                    $api.setStorage('outClass', data.out);
+                    $api.setStorage('allClass', data.all);
+                    api.sendEvent({
+                        name: 'retClassData',
+                        extra: {
+                            data: data
+                        }
+                    });
+                    // api.confirm({
+                    //     title: '欢迎使用',
+                    //     msg: '请先添加收支分类！',
+                    //     buttons: ['添加分类', '稍后提醒']
+                    // }, function(ret, err) {
+                    //     var index = ret.buttonIndex;
+                    //     if (index === 1) {
+                    //         openWin({
+                    //             name: 'class_win',
+                    //             type: 'in'
+                    //         });
+                    //     }
+                    // });
+                } else {
+                    setTimeout(function(){
+                        api.sendEvent({
+                            name: 'updataClass'
+                        });
+                    }, 5000);
+                }
+            });
+        });
+
+        //获取用户信息
+        api.sendEvent({
+            name: 'updataClass'
+        });
+
     };
 
     var tab = new auiTab({
@@ -108,7 +150,7 @@
 
 
     /** 获取常用数据保存到本地 */
-    function getUsualData(callback) {
+    function getClassData(callback) {
         //获取分类列表
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/aclass',
@@ -121,17 +163,12 @@
             }
         },function(ret, err){
             if (ret.uid) {
-                // alert( JSON.stringify( ret.data.in ) );
-                $api.setStorage('inClass', ret.data.in);
-                $api.setStorage('outClass', ret.data.out);
-                $api.setStorage('allClass', ret.data.all);
-                callback();
+                callback(ret.data);
             } else {
-                alert( JSON.stringify( err ) );
+                //alert( JSON.stringify( err ) );
                 callback();
             }
         });
-
     }
 
     function goLogout() {
