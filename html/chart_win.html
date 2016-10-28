@@ -129,6 +129,11 @@
 
     /** 初始化数据 */
     function initData() {
+        //图表加载动画
+        chartMain.showLoading();
+        chartInClass.showLoading();
+        chartOutClass.showLoading();
+
         //设置标题
         if (type === 'month') {
             title = year + '年' + month + '月';
@@ -156,9 +161,13 @@
             chartData.OutSumClassMoney = objToKeyArr(ret.OutSumClassMoney, 0);
             chartData.OverSumMoney = objToArr(ret.SurplusSumMoney);
             initChartMain();
-            initChartInClass();
-            initChartOutClass();
-            toast.hide();
+            toast.hide();            
+            setTimeout(function(){
+                initChartInClass();
+            }, 1000);
+            setTimeout(function(){
+                initChartOutClass();
+            }, 2000);
         });
     }
 
@@ -195,6 +204,7 @@
 
     /** 年度主图表 */
     function yearChartMain() {
+        chartMain.hideLoading();
         chartMain.setOption({
             title: {
                 text: title + '收入与支出金额汇总',
@@ -277,6 +287,7 @@
         for (var i = 1; i <= chartData.OverMoney.length; i++) {
             xData.push(i + '日');
         }
+        chartMain.hideLoading();
         chartMain.setOption({
             title: {
                 text: title + '收入与支出金额汇总',
@@ -355,6 +366,7 @@
 
     /** 填充收入分类饼图 */
     function initChartInClass() {
+        chartInClass.hideLoading();
         chartInClass.setOption({
             title : {
                 text: title + '收入分类汇总',
@@ -419,6 +431,7 @@
 
     /** 填充支出分类饼图 */
     function initChartOutClass() {
+        chartOutClass.hideLoading();
         chartOutClass.setOption({
             title : {
                 text: title + '支出分类汇总',
