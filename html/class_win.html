@@ -32,7 +32,7 @@
         <section class="aui-content">
             <div class="aui-card-list">
                 <div class="aui-card-list-header">
-                    <span class="aui-text-danger" id="div-class-name">添加支出分类</span>
+                    <span class="aui-text-info" id="div-class-name">添加支出分类</span>
                 </div>
                 <div class="aui-card-list-content-padded">
                     <ul class="aui-list aui-form-list">
@@ -63,23 +63,35 @@
         <section class="aui-content">
             <div class="aui-card-list" >
                 <div class="aui-card-list-header">
-                    <span class="aui-text-danger" id="class-list-header">支出分类列表</span>
+                    <span class="aui-text-info" id="class-list-header">支出分类列表</span>
                 </div>
                 <div class="aui-content aui-margin-b-15 aui-margin-l-15 aui-margin-r-15">
                     <ul class="aui-list aui-list-in" id="class-list">
-                        <li class="aui-list-item aui-list-item-middle">
-                            <div class="aui-list-item-inner aui-list-item-arrow">
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
                                 <div class="aui-list-item-title">吃饭</div>
+                                <div class="aui-list-item-right">
+                                    <div class="aui-btn aui-btn-primary" onclick="cmdEdit();">编辑</div>&nbsp;
+                                    <div class="aui-btn aui-btn-warning" onclick="cmdChange();">转移</div>&nbsp;
+                                </div>
                             </div>
                         </li>
                         <li class="aui-list-item">
-                            <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-inner">
                                 <div class="aui-list-item-title">交通</div>
+                                <div class="aui-list-item-right">
+                                    <div class="aui-btn aui-btn-primary" onclick="cmdEdit();">编辑</div>&nbsp;
+                                    <div class="aui-btn aui-btn-warning" onclick="cmdChange();">转移</div>&nbsp;
+                                </div>
                             </div>
                         </li>
                         <li class="aui-list-item">
-                            <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-inner">
                                 <div class="aui-list-item-title">生活</div>
+                                <div class="aui-list-item-right">
+                                    <div class="aui-btn aui-btn-primary" onclick="cmdEdit();">编辑</div>&nbsp;
+                                    <div class="aui-btn aui-btn-warning" onclick="cmdChange();">转移</div>&nbsp;
+                                </div>
                             </div>
                         </li>
                     </ul>
@@ -100,6 +112,7 @@
 <script type="text/javascript" src="../script/aui-tab.js" ></script>
 <script type="text/javascript" src="../script/aui-toast.js" ></script>
 <script type="text/javascript">
+    var ClassList;
     var toast = new auiToast();
     var now = new Date();
     var strNow = '';
@@ -124,7 +137,6 @@
         api.addEventListener({
             name: 'retClassData'
         }, function(ret, err) {
-            // alert( JSON.stringify( ret ) );
             initList();
         });
     }
@@ -164,13 +176,13 @@
     /** 初始化显示分类(收支类别) */
     function showClass(type) {
         if (type == 'in') {
-            var ClassList = $api.getStorage('inClass');
+            ClassList = $api.getStorage('inClass');
             $api.text($api.byId('div-class-name'), '添加收入分类');
             $api.text($api.byId('class-list-header'), '收入分类列表');
             $api.byId('class-name').placeholder = '输入收入分类名称';
             $api.byId('class-type').value = '1';
         } else {
-            var ClassList = $api.getStorage('outClass');
+            ClassList = $api.getStorage('outClass');
             $api.text($api.byId('div-class-name'), '添加支出分类');
             $api.text($api.byId('class-list-header'), '支出分类列表');
             $api.byId('class-name').placeholder = '输入支出分类名称';
@@ -181,10 +193,14 @@
         ListUl.innerHTML = "";
         for (var id in ClassList) {
             ListUl.insertAdjacentHTML('beforeEnd', ''+
-                '<li class="aui-list-item aui-list-item-middle" onclick="alert('+id+');">'+
-                    '<div class="aui-list-item-inner aui-list-item-arrow">'+
-                        '<div class="aui-list-item-title">'+ClassList[id]+'</div>'+
-                    '</div>'+
+                '<li class="aui-list-item">'+
+                '    <div class="aui-list-item-inner">'+
+                '        <div class="aui-list-item-title">'+ClassList[id]+'</div>'+
+                '        <div class="aui-list-item-right">'+
+                '            <div class="aui-btn aui-btn-primary" onclick="cmdEdit('+id+');">编辑</div>&nbsp;'+
+                '            <div class="aui-btn aui-btn-warning" onclick="cmdChange('+id+');">转移</div>&nbsp;'+
+                '        </div>'+
+                '    </div>'+
                 '</li>'+
             '');
         }
@@ -224,14 +240,14 @@
         return true;
     }
 
-    /** 发送添加分类数据(data数组, 回调函数) */
-    function sendAddData(data, callback) {
+    /** 发送分类数据(data数组, 回调函数) */
+    function sendClassData(data, type, callback) {
         api.ajax({
             url: 'http://qxu1192050221.my3w.com/xxjzApp/index.php/Home/Api/aclass',
             method: 'post',
             data: {
                 values: { 
-                    type: 'add',
+                    type: type,
                     data: data
                 }
             }
@@ -249,6 +265,7 @@
         });
     }
 
+    /** 添加分类命令 */
     function cmdAdd() {
         var addData = {};
         addData.classname = $api.byId('class-name').value;
@@ -263,7 +280,7 @@
             title:"添加分类中",
             duration:2000
         },function(ret){
-            sendAddData(strData,function(ret){
+            sendClassData(strData, 'add', function(ret){
                 toast.hide();
                 if (ret) {
                     //alert(JSON.stringify(ret));
@@ -274,8 +291,7 @@
                                 name: 'updataClass'
                             });
 
-
-                            //显示记账完成提示框
+                            //显示完成提示框
                             toast.success({
                                 title: '添加完成',
                                 duration:2000
@@ -311,6 +327,115 @@
             // setTimeout(function(){
             //     toast.hide();
             // }, 3000)
+        });
+    }
+
+    /** 编辑分类 */
+    function editClass(editData, type) {
+        var strData = BASE64.encoder(JSON.stringify(editData));
+        toast.loading({
+            title:"提交中",
+            duration:2000
+        },function(ret){
+            sendClassData(strData, type, function(ret){
+                toast.hide();
+                if (ret) {
+                    //alert(JSON.stringify(ret));
+                    if (ret.data) {
+                        if (ret.data[0]) {
+                            //更新分类数据
+                            api.sendEvent({
+                                name: 'updataClass'
+                            });
+
+                            //显示完成提示框
+                            toast.success({
+                                title: '分类成功',
+                                duration:2000
+                            });
+                        } else {
+                            //分类失败
+                            api.alert({
+                                title: '分类失败',
+                                msg: ret.data[1]
+                            },function(){
+                                initList();
+                            });
+                        }
+                    } else {
+                        //未登录
+                        toast.fail({
+                            title: '未登录',
+                            duration:1000
+                        },function(){});
+
+                        //延时页面跳转
+                        setTimeout(function(){
+                            goLogout();
+                        }, 900);
+                    }
+                } else {
+                    api.alert({
+                        title: '分类失败',
+                        msg: '连接服务器失败，请稍后再试！'
+                    },function(){});
+                }
+            });  
+        });
+    }
+
+    /** 编辑分类命令 */
+    function cmdEdit(id) {
+        var type = parseInt($api.byId('class-type').value);
+        api.prompt({
+            title: '编辑分类',
+            text: ClassList[id],
+            type: 'text',
+            buttons: ['编辑', '取消']
+        }, function(ret, err) {
+            var index = ret.buttonIndex;
+            var text = ret.text;
+            if (text.length === 0) {
+                api.alert({
+                    title: '分类名错误',
+                    msg: '分类名不能为空！'
+                });
+                index = 0;
+            }
+            if (index === 1) {
+                var editData = {};
+                editData.classid   = id;
+                editData.classname = text
+                editData.classtype = $api.byId('class-type').value;
+                editData.ufid      = $api.getStorage('user').uid;
+                editClass(editData, 'edit');
+            }
+        });
+    }
+
+    /** 转移分类命令 */
+    function cmdChange(id) {
+        if ($api.byId('class-type').value == 1) {
+            var TypeName = '支出'; 
+            var type = 2;
+        } else {
+            var TypeName = '收入';
+            var type = 1;
+        }
+        api.confirm({
+            title: '转移分类',
+            msg: '你是否要将【'+ClassList[id]+'】转为'+TypeName+'？',
+            buttons: ['是', '否']
+        }, function(ret, err) {
+            var index = ret.buttonIndex;
+            if (index === 1) {
+                var editData = {};
+                editData.classid   = id;
+                editData.classname = ClassList[id];
+                editData.classtype = type;
+                editData.ufid      = $api.getStorage('user').uid;
+                editClass(editData, 'change');
+            }
         });
     }
 
