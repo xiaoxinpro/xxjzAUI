@@ -102,19 +102,21 @@
                             data: data
                         }
                     });
-                    // api.confirm({
-                    //     title: '欢迎使用',
-                    //     msg: '请先添加收支分类！',
-                    //     buttons: ['添加分类', '稍后提醒']
-                    // }, function(ret, err) {
-                    //     var index = ret.buttonIndex;
-                    //     if (index === 1) {
-                    //         openWin({
-                    //             name: 'class_win',
-                    //             type: 'in'
-                    //         });
-                    //     }
-                    // });
+                    if (!data.all) {
+                        api.confirm({
+                            title: '欢迎使用',
+                            msg: '请先添加收支分类！',
+                            buttons: ['添加分类', '稍后提醒']
+                        }, function(ret, err) {
+                            var index = ret.buttonIndex;
+                            if (index === 1) {
+                                openWin({
+                                    name: 'class_win',
+                                    type: 'out'
+                                });
+                            }
+                        });
+                    }
                 } else {
                     setTimeout(function(){
                         api.sendEvent({
