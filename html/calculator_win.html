@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.2.0.css" />
+    <style type="text/css">
+        input[type="date"] {
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" id="header" style="padding-top:20px; position:fixed;">
+        <div class="aui-pull-left">
+            <i class="aui-iconfont aui-icon-left" onclick="closeWin();"></i>
+        </div>
+        <div class="aui-title">
+            速算练习
+        </div>
+        <div class="aui-pull-right">
+            <a class="aui-btn aui-iconfont aui-icon-refresh" href=""></a>
+        </div>
+    </header>
+    <div id="header-bottom"></div>
+    <div class="aui-content aui-margin-b-15 aui-padded-t-15">
+        <!-- 添加分类布局 -->
+        <section class="aui-content">
+            <div class="aui-card-list">
+                <div class="aui-card-list-header">
+                    <span class="aui-text-info" id="div-class-name">开始练习</span>
+                </div>
+                <div class="aui-card-list-content-padded">
+                    <ul class="aui-list aui-form-list">
+                        <!-- 题目 -->
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label">
+                                    题目
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <span id="cal-text"></span>
+                                    <!-- <input type="text" id="cal-text" value="" disabled /> -->
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 结果 -->
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label">
+                                    计算
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <input type="number" id="cal-cheak" onchange="cheakCalculator();"/>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="aui-card-list-footer">
+                    <div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm" onclick="cmdChange();">改变</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 计算器键盘 -->
+        <section class="aui-grid aui-margin-b-15 aui-hide">
+
+            <div class="aui-row-padded">
+                <div class="aui-col-xs-4" onclick="keyBoard('1');">
+                    <div class="aui-grid-label aui-font-size-20">1</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('2');">
+                    <div class="aui-grid-label aui-font-size-20">2</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('3');">
+                    <div class="aui-grid-label aui-font-size-20">3</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('4');">
+                    <div class="aui-grid-label aui-font-size-20">4</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('5');">
+                    <div class="aui-grid-label aui-font-size-20">5</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('6');">
+                    <div class="aui-grid-label aui-font-size-20">6</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('7');">
+                    <div class="aui-grid-label aui-font-size-20">7</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('8');">
+                    <div class="aui-grid-label aui-font-size-20">8</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('9');">
+                    <div class="aui-grid-label aui-font-size-20">9</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('-');">
+                    <div class="aui-grid-label aui-font-size-20">-</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('0');">
+                    <div class="aui-grid-label aui-font-size-20">0</div>
+                </div>
+                <div class="aui-col-xs-4" onclick="keyBoard('.');">
+                    <div class="aui-grid-label aui-font-size-20">.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计布局 -->
+        <section class="aui-content">
+            <div class="aui-card-list" >
+                <div class="aui-card-list-header">
+                    <span class="aui-text-info" id="class-list-header">统计结果</span>
+                </div>
+                <div class="aui-content aui-margin-b-15 aui-margin-l-15 aui-margin-r-15">
+                    <ul class="aui-list aui-list-in" id="class-list">
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title">计算量</div>
+                                <div class="aui-list-item-right aui-font-size-16" id="cal-sum">0</div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title">正确量</div>
+                                <div class="aui-list-item-right aui-font-size-16" id="cal-true">0</div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title">错误量</div>
+                                <div class="aui-list-item-right aui-font-size-16" id="cal-false">0</div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title">准确率</div>
+                                <div class="aui-list-item-right aui-font-size-16" id="cal-per">0</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="aui-card-list-footer aui-text-center">
+                    <div class="aui-btn aui-btn-block aui-btn-sm" onclick="closeWin();">返回</div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/base64.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var ClassList;
+    var toast = new auiToast();
+    var now = new Date();
+    var strNow = '';
+    var calCheak = 0;
+    var calSum = 0;
+    var calTrue = 0;
+    var calFalse = 0;
+    var calPer = 0;
+    apiready = function(){
+        api.parseTapmode();
+        //不支持沉浸式效果
+        if (!api.statusBarAppearance) {
+            $api.byId('header').style.paddingTop = 0;
+        }
+        //顶部导航栏高度抵消
+        $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
+
+        //初始化列表
+        initList();
+    }
+
+    /** 初始化表单 */
+    function initList() {
+        $api.byId('cal-sum').innerHTML = '0';
+        $api.byId('cal-true').innerHTML = '0';
+        $api.byId('cal-false').innerHTML = '0';
+        $api.byId('cal-per').innerHTML = '0%';
+        cmdChange();
+    }
+
+    function cmdChange() {
+        $api.byId('cal-text').innerHTML = '';
+        $api.byId('cal-cheak').value = '';
+        var c1 = getRand(1,50,[1,10,20,30,40,50]);
+        var c2 = getRand(1,50,[1,10,20,30,40,50,c1]);
+        //比较交换两个数
+        if (c2 > c1) {
+            c2 = c1 + c2;
+            c1 = c2 - c1;
+            c2 = c2 - c1
+        }
+
+        if (getRand(1,10) % 2) {
+            $api.byId('cal-text').innerHTML = ''+c1+' + '+c2;
+            calCheak = c1+c2;
+        } else {
+            $api.byId('cal-text').innerHTML = ''+c1+' - '+c2;
+            calCheak = c1-c2;
+        }
+
+        $api.byId('cal-cheak').focus();
+    }
+
+    function getRand(min,max,out) {
+        var r = 0;
+        var isLoop = false;
+        do {
+            isLoop = false;
+            r = parseInt(Math.random()*(max-min+1)+min,10);
+            if (out) {
+                for (var i in out) {
+                    if (out[i] === r) {
+                        isLoop = true;
+                        break;
+                    }
+                }
+            }
+        } while (isLoop)
+        return r;
+    }
+
+    function cheakCalculator() {
+        var text = $api.byId('cal-cheak').value;
+        if (text.length >= calCheak.toString.length) {
+            calSum++;
+            if (parseInt(text) === calCheak) {
+                calTrue++;
+                api.toast({
+                    msg: '正确'+calTrue+'个',
+                    duration: 1000,
+                    location: 'top'
+                });
+                toast.success({
+                    title: '正确',
+                    duration:500
+                });
+            } else {
+                calFalse++;
+                api.toast({
+                    msg: '错误'+calFalse+'个',
+                    duration: 1000,
+                    location: 'top'
+                });
+                toast.fail({
+                    title: '错误',
+                    duration:500
+                });
+            }
+            showCalculator();
+            cmdChange();
+        }
+    }
+
+    function showCalculator() {
+        $api.byId('cal-sum').innerHTML = calSum;
+        $api.byId('cal-true').innerHTML = calTrue;
+        $api.byId('cal-false').innerHTML = calFalse;
+        if (calTrue > 0) {
+            $api.byId('cal-per').innerHTML = (calTrue/calSum*100).toFixed(2)+'%';
+        } else {
+            $api.byId('cal-per').innerHTML = '0%';
+        }
+    }
+
+    function keyBoard(key) {
+        var text = $api.byId('cal-cheak').value;
+        if ((key === '-')&&(text.length > 0)) {
+            return;
+        }
+        if ((key === '.')&&((text === '-')||(text.length === 0))) {
+            return;
+        }
+        if ((key === '.')&&(/\./.test(text))) {
+            return;
+        }
+        if ((key === '0')&&(text === '0')) {
+            return;
+        }
+        $api.byId('cal-cheak').value = text+key;
+        //cheakCalculator();
+    }
+
+    function goLogout() {
+        api.sendEvent({
+            name: 'xxjzLogout',
+            extra: {
+                value: 'xxjzLogout'
+            }
+        });
+    }
+
+    /** 关闭窗体 */
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+
+</script>
+</html>
