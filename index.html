@@ -176,18 +176,14 @@
                 y: 0,
                 w: 'auto',
                 h: 'auto'
-            },
-            animation: {
-                type: "movein",                //动画类型（详见动画类型常量）
-                curve: "ease_out",              //动画曲线类型，开始时慢
-                subType: "from_bottom",        //动画子类型（详见动画子类型常量）
-                duration: 300                  //动画过渡时间，默认300毫秒
             }
         })
         api.closeToWin({
             name: 'root',
             animation: {
-                type: 'fade'
+                type: 'reveal',
+                subType:"from_bottom",
+                duration: 400 
             }
         });
     }
