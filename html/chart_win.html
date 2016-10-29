@@ -110,6 +110,13 @@
         //初始化数据
         initData();
 
+        //监听分类更新
+        api.addEventListener({
+            name: 'retClassData'
+        }, function(ret, err) {
+            initData();
+        });
+
     }
 
     /** 自适应窗体 */

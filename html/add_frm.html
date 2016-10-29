@@ -108,6 +108,13 @@
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
 
+        //监听分类更新
+        api.addEventListener({
+            name: 'retClassData'
+        }, function(ret, err) {
+            initList();
+        });
+
         //页面显示初始化
         var varYear = now.getFullYear();
         var varMonth= now.getMonth() + 1;

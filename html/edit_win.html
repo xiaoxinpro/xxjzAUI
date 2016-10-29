@@ -120,6 +120,13 @@
         //顶部导航栏高度抵消
         $api.byId('header-bottom').style.marginTop = $api.offset($api.byId('header')).h + 'px';
 
+        //监听分类更新
+        api.addEventListener({
+            name: 'retClassData'
+        }, function(ret, err) {
+            initList();
+        });
+
         toast.loading({
             title:"加载中",
             duration:2000
