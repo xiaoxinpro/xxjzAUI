@@ -84,7 +84,7 @@
                 <li class="aui-list-item aui-list-item-middle" onclick="clearCache();">
                     <div class="aui-list-item-inner aui-list-item-arrow">
                         <div class="aui-list-item-title">清除缓存</div>
-                        <div class="aui-list-item-right" id="id-cache-size"></div>
+                        <div class="aui-list-item-right" id="id-cache-size">正在计算</div>
                     </div>
                 </li>
                 <!-- 关于我们 -->
@@ -125,7 +125,23 @@
         //获取用户信息
         user = $api.getStorage('user');
         uid = user.uid;
+        $api.byId('id-username').innerHTML = user.username;
         getUserInfo();
+
+        //计算缓存大小
+        api.getCacheSize(function(ret) {
+            var size = ret.size;
+            var unit = 'KB';
+            if (size <= 0) {
+                size = 0;
+            } else if (size < 100000) {
+                size = size / 1000;
+            } else {
+                size = size / 1000 / 1000;
+                unit = 'MB';
+            }
+            $api.byId('id-cache-size').innerHTML = '' + size.toFixed(2) + unit;
+        });
     }
 
     /** 获取用户信息 */
@@ -152,20 +168,6 @@
                         goLogout();
                     });
                 }
-                //计算缓存大小
-                api.getCacheSize(function(ret) {
-                    var size = ret.size;
-                    var unit = 'KB';
-                    if (size <= 0) {
-                        size = 0;
-                    } else if (size < 100000) {
-                        size = size / 1000;
-                    } else {
-                        size = size / 1000 / 1000;
-                        unit = 'MB';
-                    }
-                    $api.byId('id-cache-size').innerHTML = '' + size.toFixed(2) + unit;
-                });
             } else {
                 alert( JSON.stringify( err ) );
             }
@@ -202,7 +204,7 @@
 
     /** 清除缓存命令 */
     function clearCache() {
-        $api.byId('id-username').innerHTML = '';
+        $api.byId('id-username').innerHTML = user.username;
         $api.byId('id-email').innerHTML = '';
         $api.byId('id-cache-size').innerHTML = '0.00KB';
         getUserInfo();
