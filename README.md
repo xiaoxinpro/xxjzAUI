@@ -1,8 +1,8 @@
-#小歆记账APICloud项目(AUI前端框架)
+# 小歆记账APICloud项目(AUI前端框架)
 
 ![](http://upload-images.jianshu.io/upload_images/1568014-caeefa6ab53be35b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-##简介
+## 简介
 
 小歆记账AUI项目(APICloud客户端) 是一个基于APICloud + AUI的记账应用，同时兼容安卓和iOS平台，以下简称小歆记账AUI。
 
@@ -12,15 +12,15 @@
 
 > 注意：小歆记账AUI必须与[小歆记账WebApp项目](https://github.com/xiaoxinpro/xxjzWeb)配套使用，不能单独工作。
 
-##安装使用
+## 安装使用
 
-###源码调试
+### 源码调试
 小歆记账AUI项目包为app源码，在APICloud中新建一个项目将代码覆盖，即可调试安装。
 
-###APP下载
-小歆记账AUI还处于后期完善阶段，APP还是测试版本，iOS只能使用7天，建议下载源码自行调试安装。[点击这里下载APP](http://jz.xxgzs.org/xxjzApp/index.php/Home/Login/index/type/app)
+### APP下载
+小歆记账AUI还处于后期完善阶段，APP还是测试版本，iOS以无法下载安装，请下载源码自行调试安装。[安卓点击这里下载APP](http://jz.xxgzs.org/xxjzApp/index.php/Home/Login/index/type/app)
 
-##目录结构
+## 目录结构
 
 
     xxjzAUI  项目根目录
@@ -61,11 +61,11 @@
       ├─config.xml                   APP配置文件
       └─index.html                   入口文件
 
-##开发工具
+## 开发工具
 
 APICloud 云端一体 重新定义移动应用开发;一站式高效APP开发和管理平台,使用标准WEB技术开发跨平台APP；覆盖APP全生命周期，包括开发、API集成、测试、渠道打包、运营管理等。[www.apicloud.com](http://www.apicloud.com/)
 
-##参考
+## 参考
 
 * [APICloud](https://github.com/apicloudcom)
 * [aui](https://github.com/liulangnan/aui)
